@@ -1,9 +1,9 @@
 import telegram
 import telegram.ext
-
 import bot.add_learning_words
-import bot.check_answer_correctness
-import bot.start
+import bot.user_response_actions
+import bot.start_command
+
 from configurations.settings import TOKEN
 
 
@@ -15,15 +15,15 @@ def main():
     )
     dp = updater.dispatcher
     dp.add_handler(telegram.ext.CommandHandler(command='start',
-                                               callback=bot.start.start_command
+                                               callback=bot.start_command.start_command
                                                )
                    )
     dp.add_handler(telegram.ext.CommandHandler(command='add',
-                                               callback=bot.add_learning_words.add_learning_words
+                                               callback=bot.add_learning_words.get_learning_words
                                                )
                    )
     dp.add_handler(telegram.ext.MessageHandler(filters=telegram.ext.Filters.text,
-                                               callback=bot.check_answer_correctness.check_answer_correctness
+                                               callback=bot.user_response_actions.get_user_answer
                                                )
                    )
     updater.start_polling()
