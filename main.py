@@ -8,7 +8,7 @@ from configurations.settings import TOKEN
 
 
 def main():
-    print('*START*')
+    print('**START**')
     updater = telegram.ext.Updater(
         token=TOKEN,
         use_context=True
