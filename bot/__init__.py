@@ -1,1 +1,1 @@
-from .random_word import random_word
+from .generate_next_random_word import get_random_word
