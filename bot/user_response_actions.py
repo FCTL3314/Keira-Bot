@@ -7,8 +7,8 @@ import configurations.settings
 def get_user_answer(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Gets the user's response to the given word from get_random_word function"""
     text = update.message.text  # Ответ пользователя на предоставленное ему слово
-    word = context.user_data["learning_words"][context.user_data["ran_num"]]  # Достаёт сгенерированное слово из
-    # функции random_num при помощи индекса context.user_data["ran_num"]
+    word = context.user_data["learning_words"][context.bot_data["ran_num"]]  # Достаёт сгенерированное слово из
+    # функции random_num при помощи индекса context.bot_data["ran_num"]
     get_translated_word(
         update=update,
         context=context,
