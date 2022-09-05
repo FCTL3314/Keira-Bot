@@ -8,7 +8,7 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     """Separates '/add ' from user-entered words and splits into separate words"""
     context.user_data['learning_words'] = update.message.text[4:].split()  # Отделяет /add от
     # context.user_data['learning_words'] и разделяет на отдельные слова с помощью .split()
-    learning_words = context.user_data["learning_words"]
+    learning_words = context.user_data["learning_words"]  # Записывает слова в переменную learning_words
     check_number_of_words(
         update=update,
         context=context,
@@ -42,14 +42,14 @@ def accepted_words_visual(learning_words, learning_words_translated):
     Example: /add Apple Coffee Milk
     Output: Apple - Яблоко\nCoffee - Кофе\nMilk - Молоко\n (Translation into Russian)
     """
-    accepted_words = ''  # Пустая переменная в которую будут добавляться слово и его перевод(Apple - Яблоко)
+    accepted_words = ''  # Пустая переменная в которую будут добавляться слово и его перевод(Apple - Яблоко\n...)
     for word in range(len(learning_words_translated)):  # Добавляет слова в accepted_words.
         accepted_words += f'{learning_words[word]} - {learning_words_translated[word]}\n'
     return accepted_words
 
 
 def translate_learnings_words(learning_words):
-    """Translates words entered by the user"""
+    """Translates learning_words variable"""
     learning_words_translated = []  # Пустой список в который будут добавляться переведённые(learning_words) слова.
     for word in range(len(learning_words)):  # Добавляет в learning_words_translated переведённые слова.
         learning_words_translated.append(translators.google(
