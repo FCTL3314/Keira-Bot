@@ -8,9 +8,11 @@ WORDS, GET_WORDS = range(2)
 
 def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Asks the User to enter a 'NUMBER_OF_WORDS' words. Entry-point of the ConversationHandler."""
-    update.message.reply_text(text=f'Введите {configurations.settings.NUMBER_OF_WORDS}'
-                                   f' {asks_for_words_spellings()}.\n'  # В зависимости от числа слов меняет написание.
-                                   f'Пример: {create_example_words()}')
+    update.message.reply_text(
+        text=f'Введите {configurations.settings.NUMBER_OF_WORDS}'
+             f' {asks_for_words_spellings()}.\n'  # В зависимости от числа слов меняет написание.
+             f'Пример: {create_example_words()}'
+    )
     return WORDS
 
 
@@ -47,23 +49,15 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
             learning_words=context.user_data['learning_words'],
             learning_words_translated=translate_learnings_words(context=context)
         )
-        words_accepted(
-            update=update,
-            context=context,
-            accepted_words=accepted_words
-        )
+        words_accepted(update=update, context=context, accepted_words=accepted_words)
         return GET_WORDS
     else:
-        words_not_accepted(
-            update=update,
-            context=context
-        )
+        words_not_accepted(update=update, context=context)
 
 
 def stop_guessing(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Exit point(fallbacks) of the ConversationHandler"""
-    update.message.reply_text(text='Поняла, останавливаюсь...\n'
-                                   'Напишите /add что бы начать заново.')
+    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /add что бы начать заново.')
     return telegram.ext.ConversationHandler.END
 
 
@@ -106,13 +100,13 @@ def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContex
              f'Если хотите остановить напишите /stop.\n'
              f'Далее необходимо вводить перевод слов:'
     )
-    bot.get_random_word(
-        update=update,
-        context=context
-    )  # Вызов функции random_word для генерации случайного слова из context.user_data['learning_words']
+    bot.get_random_word(update=update, context=context)  # Вызов функции random_word для генерации случайного
+    # слова из context.user_data['learning_words']
 
 
 def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Called if the words in the check_number_of_words function are not accepted."""
-    update.message.reply_text(text='Ой, что-то пошло не так.\n'
-                                   f'Кол-во ваших слов: {len(context.user_data["learning_words"])}.\n')
+    update.message.reply_text(
+        text='Ой, что-то пошло не так.\n'
+             f'Кол-во ваших слов: {len(context.user_data["learning_words"])}.\n'
+    )
