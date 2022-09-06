@@ -9,20 +9,11 @@ from configurations.settings import TOKEN
 
 def main():
     print('**START**')
-    updater = telegram.ext.Updater(
-        token=TOKEN,
-        use_context=True
-    )
+    updater = telegram.ext.Updater(token=TOKEN, use_context=True)
     dp = updater.dispatcher
-    dp.add_handler(telegram.ext.CommandHandler(
-        command='start',
-        callback=bot.start_command.start_command
-    )
-    )
+    dp.add_handler(telegram.ext.CommandHandler(command='start', callback=bot.start_command.start_command))
     dp.add_handler(telegram.ext.ConversationHandler(
-        entry_points=[
-            telegram.ext.CommandHandler('add', bot.get_learning_words.asks_for_words, pass_user_data=True),
-        ],
+        entry_points=[telegram.ext.CommandHandler('add', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
         states={
             bot.get_learning_words.WORDS: [
                 telegram.ext.MessageHandler(
@@ -37,9 +28,7 @@ def main():
                     pass_user_data=True),
             ],
         },
-        fallbacks=[
-            telegram.ext.CommandHandler('stop', bot.get_learning_words.stop_guessing),
-        ],
+        fallbacks=[telegram.ext.CommandHandler('stop', bot.get_learning_words.stop_guessing)],
     )
     )
     updater.start_polling()
