@@ -19,14 +19,27 @@ def main():
         callback=bot.start_command.start_command
     )
     )
-    dp.add_handler(telegram.ext.CommandHandler(
-        command='add',
-        callback=bot.get_learning_words.get_learning_words
-    )
-    )
-    dp.add_handler(telegram.ext.MessageHandler(
-        filters=telegram.ext.Filters.text,
-        callback=bot.user_response_actions.get_user_answer
+    dp.add_handler(telegram.ext.ConversationHandler(
+        entry_points=[
+            telegram.ext.CommandHandler('add', bot.get_learning_words.enter_words, pass_user_data=True),
+        ],
+        states={
+            1: [
+                telegram.ext.MessageHandler(
+                    filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
+                    callback=bot.get_learning_words.get_entered_words,
+                    pass_user_data=True),
+            ],
+            2: [
+                telegram.ext.MessageHandler(
+                    filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
+                    callback=bot.user_response_actions.get_user_answer,
+                    pass_user_data=True),
+            ],
+        },
+        fallbacks=[
+            telegram.ext.CommandHandler('stop', bot.get_learning_words.stop),
+        ],
     )
     )
     updater.start_polling()

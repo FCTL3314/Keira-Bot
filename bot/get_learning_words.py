@@ -4,6 +4,23 @@ import bot
 import configurations.settings
 
 
+def enter_words(update: telegram.Update, context: telegram.ext.CallbackContext):
+    update.message.reply_text(text=f'Введите {configurations.settings.NUMBER_OF_WORDS} слов')
+    return 1
+
+
+def get_entered_words(update: telegram.Update, context: telegram.ext.CallbackContext):
+    context.user_data['learning_words'] = update.message.text.split()
+    learnings_words = context.user_data['learning_words']
+    check_number_of_words(update=update, context=context, learning_words=learnings_words)
+    return 2
+
+
+def stop(update: telegram.Update, context: telegram.ext.CallbackContext):
+    update.message.reply_text(text='Поняла, останавливаюсь...')
+    return telegram.ext.ConversationHandler.END
+
+
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Separates '/add ' from user-entered words and splits into separate words"""
     context.user_data['learning_words'] = update.message.text[4:].split()  # Отделяет /add от
@@ -70,8 +87,7 @@ def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContex
     bot.get_random_word(
         update=update,
         context=context
-    )  # Вызов функции random_word
-    # для генерации случайного слова из context.user_data['learning_words']
+    )  # Вызов функции random_word для генерации случайного слова из context.user_data['learning_words']
 
 
 def words_not_accepted(update: telegram.Update, learning_words):
