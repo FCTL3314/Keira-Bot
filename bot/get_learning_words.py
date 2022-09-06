@@ -45,11 +45,7 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     context.user_data['learning_words'] = update.message.text.split()  # Разделяет слова и записывает в
     # context.user_data['learning_words']
     if check_number_of_words(context=context):  # Если check_number_of_words - True, то принимает слова, иначе - нет.
-        accepted_words = accepted_words_visual(
-            learning_words=context.user_data['learning_words'],
-            learning_words_translated=translate_learnings_words(context=context)
-        )
-        words_accepted(update=update, context=context, accepted_words=accepted_words)
+        words_accepted(update=update, context=context)
         return GET_WORDS
     else:
         words_not_accepted(update=update, context=context)
@@ -67,7 +63,7 @@ def check_number_of_words(context: telegram.ext.CallbackContext):
     # если кол-во введенных слов == NUMBER_OF_WORDS, иначе False.
 
 
-def accepted_words_visual(learning_words, learning_words_translated):
+def accepted_words_visual(learning_words: list, learning_words_translated: list) -> str:
     """
     Creates a variable in which it adds the words entered by the user and their translation
     Example: Apple Coffee Milk
@@ -93,8 +89,12 @@ def translate_learnings_words(context: telegram.ext.CallbackContext):
     return learning_words_translated
 
 
-def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContext, accepted_words):
+def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Called if the words in the check_number_of_words function are accepted."""
+    accepted_words = accepted_words_visual(
+        learning_words=context.user_data['learning_words'],
+        learning_words_translated=translate_learnings_words(context=context)
+    )
     update.message.reply_text(
         text=f'Слова приняты:\n{accepted_words} '
              f'Если хотите остановить напишите /stop.\n'
