@@ -21,16 +21,16 @@ def main():
     )
     dp.add_handler(telegram.ext.ConversationHandler(
         entry_points=[
-            telegram.ext.CommandHandler('add', bot.get_learning_words.enter_words, pass_user_data=True),
+            telegram.ext.CommandHandler('add', bot.get_learning_words.asks_for_words, pass_user_data=True),
         ],
         states={
-            1: [
+            bot.get_learning_words.WORDS: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
-                    callback=bot.get_learning_words.get_entered_words,
+                    callback=bot.get_learning_words.get_learning_words,
                     pass_user_data=True),
             ],
-            2: [
+            bot.get_learning_words.GET_WORDS: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
                     callback=bot.user_response_actions.get_user_answer,
@@ -38,7 +38,7 @@ def main():
             ],
         },
         fallbacks=[
-            telegram.ext.CommandHandler('stop', bot.get_learning_words.stop),
+            telegram.ext.CommandHandler('stop', bot.get_learning_words.stop_guessing),
         ],
     )
     )
