@@ -3,60 +3,80 @@ import translators
 import bot
 import configurations.settings
 
-
-def enter_words(update: telegram.Update, context: telegram.ext.CallbackContext):
-    update.message.reply_text(text=f'Введите {configurations.settings.NUMBER_OF_WORDS} слов')
-    return 1
+WORDS, GET_WORDS = range(2)
 
 
-def get_entered_words(update: telegram.Update, context: telegram.ext.CallbackContext):
-    context.user_data['learning_words'] = update.message.text.split()
-    learnings_words = context.user_data['learning_words']
-    check_number_of_words(update=update, context=context, learning_words=learnings_words)
-    return 2
+def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext):
+    """Asks the User to enter a 'NUMBER_OF_WORDS' words. Entry-point of the ConversationHandler."""
+    update.message.reply_text(text=f'Введите {configurations.settings.NUMBER_OF_WORDS}'
+                                   f' {asks_for_words_spellings()}.\n'  # В зависимости от числа слов меняет написание.
+                                   f'Пример: {create_example_words()}')
+    return WORDS
 
 
-def stop(update: telegram.Update, context: telegram.ext.CallbackContext):
-    update.message.reply_text(text='Поняла, останавливаюсь...')
-    return telegram.ext.ConversationHandler.END
+def asks_for_words_spellings():
+    """
+    Changes the spelling of start_command introduce
+    depending on the configurations.settings.NUMBER_OF_WORDS
+    """
+    if 5 > configurations.settings.NUMBER_OF_WORDS > 1:
+        spelling = 'изучаемых иностранных слова'
+    elif configurations.settings.NUMBER_OF_WORDS == 1:
+        spelling = 'изучаемое иностранное слово'
+    else:
+        spelling = 'изучаемых иностранных слов'
+    return spelling
+
+
+def create_example_words():
+    """
+    Creates the number of words equal to configurations.settings.NUMBER_OF_WORDS
+    """
+    words = ''
+    for i in range(configurations.settings.NUMBER_OF_WORDS):
+        words += f'Word{i + 1} '
+    return words
 
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext):
-    """Separates '/add ' from user-entered words and splits into separate words"""
-    context.user_data['learning_words'] = update.message.text[4:].split()  # Отделяет /add от
-    # context.user_data['learning_words'] и разделяет на отдельные слова с помощью .split()
-    learning_words = context.user_data["learning_words"]  # Записывает слова в переменную learning_words
-    check_number_of_words(
-        update=update,
-        context=context,
-        learning_words=learning_words
-    )
-
-
-def check_number_of_words(update: telegram.Update, context: telegram.ext.CallbackContext, learning_words):
-    """Checks the number of words entered by the user"""
-    if len(learning_words) == configurations.settings.NUMBER_OF_WORDS:  # Проверяет кол-во введённых слов,
-        # из значения переменной NUMBER_OF_WORDS в configurations\settings.py
+    """Gets user-entered learning words and .split() it"""
+    context.user_data['learning_words'] = update.message.text.split()  # Разделяет слова и записывает в
+    # context.user_data['learning_words']
+    if check_number_of_words(context=context):  # Если check_number_of_words - True, то принимает слова, иначе - нет.
         accepted_words = accepted_words_visual(
-            learning_words=learning_words,
-            learning_words_translated=translate_learnings_words(learning_words=learning_words)
+            learning_words=context.user_data['learning_words'],
+            learning_words_translated=translate_learnings_words(context=context)
         )
         words_accepted(
             update=update,
             context=context,
             accepted_words=accepted_words
         )
+        return GET_WORDS
     else:
         words_not_accepted(
             update=update,
-            learning_words=learning_words
+            context=context
         )
+
+
+def stop_guessing(update: telegram.Update, context: telegram.ext.CallbackContext):
+    """Exit point(fallbacks) of the ConversationHandler"""
+    update.message.reply_text(text='Поняла, останавливаюсь...\n'
+                                   'Напишите /add что бы начать заново.')
+    return telegram.ext.ConversationHandler.END
+
+
+def check_number_of_words(context: telegram.ext.CallbackContext):
+    """Returns True if the number of entered words == NUMBER_OF_WORDS, otherwise False."""
+    return len(context.user_data['learning_words']) == configurations.settings.NUMBER_OF_WORDS  # Возвращает True
+    # если кол-во введенных слов == NUMBER_OF_WORDS, иначе False.
 
 
 def accepted_words_visual(learning_words, learning_words_translated):
     """
     Creates a variable in which it adds the words entered by the user and their translation
-    Example: /add Apple Coffee Milk
+    Example: Apple Coffee Milk
     Output: Apple - Яблоко\nCoffee - Кофе\nMilk - Молоко\n (Translation into Russian)
     """
     accepted_words = ''  # Пустая переменная в которую будут добавляться слово и его перевод(Apple - Яблоко\n...)
@@ -65,12 +85,13 @@ def accepted_words_visual(learning_words, learning_words_translated):
     return accepted_words
 
 
-def translate_learnings_words(learning_words):
+def translate_learnings_words(context: telegram.ext.CallbackContext):
     """Translates learning_words variable"""
     learning_words_translated = []  # Пустой список в который будут добавляться переведённые(learning_words) слова.
-    for word in range(len(learning_words)):  # Добавляет в learning_words_translated переведённые слова.
+    for word in range(len(context.user_data['learning_words'])):  # Добавляет в learning_words_translated
+        # переведённые слова.
         learning_words_translated.append(translators.google(
-            query_text=learning_words[word],
+            query_text=context.user_data['learning_words'][word],
             from_language=configurations.settings.FROM_LANGUAGE,
             to_language=configurations.settings.TO_LANGUAGE
         )
@@ -82,6 +103,7 @@ def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContex
     """Called if the words in the check_number_of_words function are accepted."""
     update.message.reply_text(
         text=f'Слова приняты:\n{accepted_words} '
+             f'Если хотите остановить напишите /stop.\n'
              f'Далее необходимо вводить перевод слов:'
     )
     bot.get_random_word(
@@ -90,8 +112,7 @@ def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContex
     )  # Вызов функции random_word для генерации случайного слова из context.user_data['learning_words']
 
 
-def words_not_accepted(update: telegram.Update, learning_words):
+def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Called if the words in the check_number_of_words function are not accepted."""
     update.message.reply_text(text='Ой, что-то пошло не так.\n'
-                                   f'Требуемое кол-во слов: {configurations.settings.NUMBER_OF_WORDS}.\n'
-                                   f'Кол-во ваших слов: {len(learning_words)}.')
+                                   f'Кол-во ваших слов: {len(context.user_data["learning_words"])}.\n')
