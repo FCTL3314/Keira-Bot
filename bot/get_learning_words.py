@@ -84,9 +84,8 @@ def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContex
     update.message.reply_text(text='Обработка...')
     accepted_words = accepted_words_visual(
         learning_words=context.user_data['learning_words'],
-        learning_words_translated=translate_learning_words(learning_words=context.user_data['learning_words'],
-                                                           context=context)
-    )
+        learning_words_translated=translate_learning_words(context=context,
+                                                           learning_words=context.user_data['learning_words'], ))
     update.message.reply_text(
         text=f'Слова приняты:\n{accepted_words} '
              f'Если хотите остановить напишите /stop.\n'
