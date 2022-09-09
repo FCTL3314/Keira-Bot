@@ -29,10 +29,7 @@ def create_message_spelling(number_of_words=configurations.settings.NUMBER_OF_WO
 
 def create_enter_words_example(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
     """Return string with the number of words equal to configurations.settings.NUMBER_OF_WORDS."""
-    words = ''
-    for i in range(number_of_words):
-        words += f'Word{i + 1} '
-    return words
+    return ' '.join(f'Word{i + 1}' for i in range(number_of_words))
 
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
@@ -50,7 +47,8 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
 
 def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Stops the ConversationHandler."""
-    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /add что бы начать заново.')
+    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /add что бы начать заново.',
+                              reply_markup=telegram.ReplyKeyboardRemove())
     return telegram.ext.ConversationHandler.END
 
 
