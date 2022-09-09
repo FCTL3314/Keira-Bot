@@ -64,19 +64,6 @@ def check_for_numbers(learning_words: list) -> bool:
     return True
 
 
-def accepted_words_visual(learning_words: list, learning_words_translated: list) -> str:
-    """
-    Creates a variable in which it adds the words entered by the user and their translation.
-    :param: learning_words: User entered words.
-    :param: learning_words_translated: User entered translated words.
-    :return: A string with a words and their translation entered by the user.
-    """
-    accepted_words = ''  # Пустая переменная в которую будут добавляться слово и его перевод(Apple - Яблоко\n...)
-    for word in range(len(learning_words_translated)):  # Добавляет слова в accepted_words.
-        accepted_words += f'{learning_words[word]} - {learning_words_translated[word]}\n'
-    return accepted_words
-
-
 def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Sends 'words accepted message'. And generate random word from get_random_word function"""
     update.message.reply_text(text='Обработка...')
@@ -91,6 +78,17 @@ def words_accepted(update: telegram.Update, context: telegram.ext.CallbackContex
     )
     bot.get_random_word(update=update, context=context)  # Вызов функции random_word для генерации случайного
     # слова из context.user_data['learning_words']
+
+
+def accepted_words_visual(learning_words: list, learning_words_translated: list) -> str:
+    """
+    Creates a variable in which it adds the words entered by the user and their translation.
+    :param: learning_words: User entered words.
+    :param: learning_words_translated: User entered translated words.
+    :return: A string with a words and their translation entered by the user.
+    """
+    return ''.join(
+        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words_translated)))
 
 
 def translate_learning_words(context: telegram.ext.CallbackContext, learning_words: List[str],
