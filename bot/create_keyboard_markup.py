@@ -1,7 +1,7 @@
 import telegram.ext
 
 
-def create_keyboard(context: telegram.ext.CallbackContext):
+def create_keyboard_markup(context: telegram.ext.CallbackContext):
     translated_words = context.user_data['learning_words_translated']
     reply_keyboard = []
     for i in range(len(translated_words)):
