@@ -20,11 +20,7 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
 
 def create_message_spelling(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
     """Return the string spelling depending on the configurations.settings.NUMBER_OF_WORDS."""
-    if 5 > number_of_words > 1:
-        spelling = 'изучаемых иностранных слова'
-    else:
-        spelling = 'изучаемых иностранных слов'
-    return spelling
+    return 'изучаемых иностранных слова' if 5 > number_of_words > 1 else 'изучаемых иностранных слов'
 
 
 def create_enter_words_example(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
