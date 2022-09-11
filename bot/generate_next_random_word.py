@@ -1,7 +1,7 @@
 import telegram.ext
 import random
 
-import bot.create_keyboard
+import bot.create_keyboard_markup
 import configurations.settings
 
 
@@ -13,5 +13,5 @@ def get_random_word(update: telegram.Update, context: telegram.ext.CallbackConte
     context.bot_data['ran_num'] = random.randint(0, (configurations.settings.NUMBER_OF_WORDS - 1))  # Записывает число
     # от 0 до (NUMBER_OF_WORDS - 1) в context.bot_data['ran_num']
     update.message.reply_text(text=f'{context.user_data["learning_words"][context.bot_data["ran_num"]]}',
-                              reply_markup=bot.create_keyboard(context=context))
-    # Отправляет сообщение со случайно выбранным словом и вызывает клавиатуру для ответа.
+                              reply_markup=bot.create_keyboard_markup(context=context))  # Отправляет сообщение со
+    # случайно выбранным словом и вызывает клавиатуру для ответа.
