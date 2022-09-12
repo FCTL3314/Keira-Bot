@@ -29,7 +29,8 @@ def create_enter_words_example(number_of_words=configurations.settings.NUMBER_OF
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Gets user-entered words and .split() it."""
-    context.user_data['learning_words'] = update.message.text.split()  # Записывает слова в словарь.
+    context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]  # Записывает
+    # слова в словарь.
     print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')
     if not check_number_of_words(learning_words=context.user_data['learning_words']):
         words_not_accepted(update=update, context=context, cause='Invalid number of words')
