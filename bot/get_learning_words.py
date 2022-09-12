@@ -65,12 +65,11 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
         learning_words=context.user_data['learning_words'],
         learning_words_translated=translate_learning_words(context=context,
                                                            learning_words=context.user_data['learning_words'], ))
-    update.message.bot.editMessageText(chat_id=update.message.chat_id,
-                                       text=f'Слова приняты:\n{accepted_words} '
-                                            f'Если хотите остановить напишите /stop.\n'
-                                            f'Далее необходимо вводить перевод слов:',
-                                       message_id=update.message.message_id + 1
-                                       )
+    update.message.reply_text(text=f'Слова приняты:\n{accepted_words} '
+                                   f'Если хотите остановить напишите /stop.\n'
+                                   f'Далее необходимо вводить перевод слов:',
+                              reply_markup=bot.create_keyboard_markup(context=context)
+                              )
     bot.get_random_word(update=update, context=context)  # Вызов функции random_word для генерации случайного
     # слова из context.user_data['learning_words']
 
