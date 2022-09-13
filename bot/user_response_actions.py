@@ -13,8 +13,8 @@ def check_answer_correctness(update: telegram.Update, context: telegram.ext.Call
     """Checks the translated word entered by the user for correctness"""
     answer = update.message.text
     if answer.lower() == translated_word.lower():
-        update.message.reply_text(text='Правильно!')
+        update.message.reply_text(text='🟢Верно!')
         bot.get_random_word(update=update, context=context)  # Вызов функции random_word для зацикливания.
     else:
-        update.message.reply_text(text=f'Ошибка.\nПравильный вариант - {translated_word}')
+        update.message.reply_text(text=f'🔴Неверно.\nПравильный вариант - {translated_word}')
         bot.get_random_word(update=update, context=context)  # Вызов функции random_word для зацикливания.
