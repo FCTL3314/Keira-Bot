@@ -11,20 +11,22 @@ GET_ENTERED_WORDS, TRANSLATE_ENTERED_WORDS = range(2)
 def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Asks the User to enter a words. Entry-point of the ConversationHandler."""
     update.message.reply_text(
-        text=f'Введите {configurations.settings.NUMBER_OF_WORDS}'
-             f' {create_message_spelling()}.\n'  # В зависимости от числа слов меняет написание.
+        text=f'Введи {configurations.settings.NUMBER_OF_WORDS}'
+             f' {create_message_spelling()}\n'  # В зависимости от числа слов меняет написание.
+             f'Слова необходимо разделить пробелом и записать в одну строку.\n'
              f'Пример: {create_enter_words_example()}'
     )
     return GET_ENTERED_WORDS
 
 
 def create_message_spelling(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
-    return 'изучаемых иностранных слова' if 5 > number_of_words > 1 else 'изучаемых иностранных слов'
+    return 'изучаемых иностранных слова.' if 5 > number_of_words > 1 else 'изучаемых иностранных слов.'
 
 
 def create_enter_words_example(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
     """Return string with the number of words equal to configurations.settings.NUMBER_OF_WORDS."""
-    return ' '.join(f'Word{i + 1}' for i in range(number_of_words))
+    words = ['Berries', 'Apple', 'Cinnamon', 'Coffee', 'Milk', 'Cookies']
+    return ' '.join(words[i] for i in range(number_of_words))
 
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
@@ -67,8 +69,8 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
         learning_words_translated=translate_learning_words(context=context,
                                                            learning_words=context.user_data['learning_words'], ))
     update.message.reply_text(text=f'Слова приняты:\n{accepted_words} '
-                                   f'Если хотите остановить напишите /stop.\n'
-                                   f'Далее необходимо вводить перевод слов:',
+                                   f'Если желаешь прекратить переводить - напиши /stop.\n'
+                                   f'Далее тебе необходимо переводить слова:',
                               reply_markup=bot.create_keyboard_markup(context=context)
                               )
     bot.get_random_word(update=update, context=context)  # Вызов функции random_word для генерации случайного
@@ -96,10 +98,10 @@ def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackCo
     if cause == 'Invalid number of words':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
-                 f'Кол-во ваших слов: {len(context.user_data["learning_words"])}.'
+                 f'Кол-во твоих слов - {len(context.user_data["learning_words"])}.'
         )
     if cause == 'Words contain numbers':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
-                 'В ваших словах содержаться цифры.'
+                 'Видимо в введённых тобою словах имеются цифры.'
         )
