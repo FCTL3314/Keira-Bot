@@ -69,7 +69,7 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
         learning_words_translated=translate_learning_words(context=context,
                                                            learning_words=context.user_data['learning_words'], ))
     update.message.reply_text(text=f'Слова приняты:\n{accepted_words} '
-                                   f'Если желаешь прекратить переводить - напиши /stop.\n'
+                                   f'Если желаешь прекратить переводить, напиши /stop.\n'
                                    f'Далее тебе необходимо переводить слова:',
                               reply_markup=bot.create_keyboard_markup(context=context)
                               )
@@ -103,5 +103,5 @@ def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackCo
     if cause == 'Words contain numbers':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
-                 'Видимо в введённых тобою словах имеются цифры.'
+                 'Видимо, в введённых тобою словах имеются цифры.'
         )

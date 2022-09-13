@@ -3,6 +3,7 @@ import telegram.ext
 import bot.get_learning_words
 import bot.user_response_actions
 import bot.start_command
+import bot.unknown_messages_reply
 
 from configurations.settings import TOKEN
 
@@ -31,6 +32,8 @@ def main():
         fallbacks=[telegram.ext.CommandHandler('stop', bot.get_learning_words.stop_conversation)],
     )
     )
+    dp.add_handler(telegram.ext.MessageHandler(filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
+                                               callback=bot.unknown_messages_reply.unknown_message_reply))
     updater.start_polling()
     updater.idle()
 
