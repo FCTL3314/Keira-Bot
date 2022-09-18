@@ -5,7 +5,7 @@ import bot.user_response_actions
 import bot.start_command
 import bot.unexpected_messages_reply
 
-from configurations.settings import TOKEN
+from configurations.config import TOKEN
 
 
 def main():

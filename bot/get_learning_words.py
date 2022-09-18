@@ -1,7 +1,7 @@
 import telegram.ext
 import translators
 import bot
-import configurations.settings
+import configurations.config
 
 from typing import List
 
@@ -11,7 +11,7 @@ GET_ENTERED_WORDS, TRANSLATE_ENTERED_WORDS = range(2)
 def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Asks the User to enter a words. Entry-point of the ConversationHandler."""
     update.message.reply_text(
-        text=f'Введи {configurations.settings.NUMBER_OF_WORDS}'
+        text=f'Введи {configurations.config.NUMBER_OF_WORDS}'
              f' {create_message_spelling()}\n'  # В зависимости от числа слов меняет написание.
              f'Слова необходимо разделить пробелом и записать в одну строку.\n'
              f'Пример: {create_enter_words_example()}'
@@ -19,11 +19,11 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
     return GET_ENTERED_WORDS
 
 
-def create_message_spelling(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
+def create_message_spelling(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
     return 'изучаемых иностранных слова.' if 5 > number_of_words > 1 else 'изучаемых иностранных слов.'
 
 
-def create_enter_words_example(number_of_words=configurations.settings.NUMBER_OF_WORDS) -> str:
+def create_enter_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
     """Return string with the number of words equal to configurations.settings.NUMBER_OF_WORDS."""
     words = ['Berries', 'Apple', 'Cinnamon', 'Coffee', 'Milk', 'Cookies']
     return ' '.join(words[i] for i in range(number_of_words))
@@ -50,7 +50,7 @@ def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackCon
     return telegram.ext.ConversationHandler.END
 
 
-def check_number_of_words(learning_words: list, number_of_words=configurations.settings.NUMBER_OF_WORDS) -> bool:
+def check_number_of_words(learning_words: list, number_of_words=configurations.config.NUMBER_OF_WORDS) -> bool:
     return len(learning_words) == number_of_words
 
 
@@ -83,8 +83,8 @@ def accepted_words_text(learning_words: list, learning_words_translated: list) -
 
 
 def translate_learning_words(context: telegram.ext.CallbackContext, learning_words: List[str],
-                             from_language=configurations.settings.FROM_LANGUAGE,
-                             to_language=configurations.settings.TO_LANGUAGE) -> List[str]:
+                             from_language=configurations.config.FROM_LANGUAGE,
+                             to_language=configurations.config.TO_LANGUAGE) -> List[str]:
     """Translates user entered words."""
     context.user_data['learning_words_translated'] = [translators.google(query_text=learning_words[word],
                                                                          from_language=from_language,
