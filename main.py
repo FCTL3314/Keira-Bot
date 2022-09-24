@@ -25,7 +25,7 @@ def main():
             bot.get_learning_words.TRANSLATE_ENTERED_WORDS: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
-                    callback=bot.user_response_actions.get_translated_word,
+                    callback=bot.user_response_actions.check_answer_correctness,
                     pass_user_data=True),
             ],
         },
