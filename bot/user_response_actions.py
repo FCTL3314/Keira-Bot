@@ -13,8 +13,20 @@ def check_answer_correctness(update: telegram.Update, context: telegram.ext.Call
     """Checks the translated word entered by the user for correctness"""
     answer = update.message.text
     if answer.lower() == translated_word.lower():
-        update.message.reply_text(text='🟢Верно!')
-        bot.get_random_word(update=update, context=context)  # Вызов функции random_word для зацикливания.
+        bot.score.increment()
+        if bot.score.get_score() == 5:
+            update.message.reply_text(text=f'🟢Верно 5 раз подряд!\nПродолжай в том же духе!')
+            bot.get_random_word(update=update, context=context)
+        elif bot.score.get_score() == 10:
+            update.message.reply_text(text=f'🟢Верно 10 раз подряд!\nОтлично!')
+            bot.get_random_word(update=update, context=context)
+        elif bot.score.get_score() > 10:
+            update.message.reply_text(text=f'🟢Верно!\nСерия верных ответов: {bot.score.get_score()}!')
+            bot.get_random_word(update=update, context=context)
+        else:
+            update.message.reply_text(text=f'🟢Верно!')
+            bot.get_random_word(update=update, context=context)
     else:
+        bot.score.reset()
         update.message.reply_text(text=f'🔴Неверно.\nПравильный вариант - {translated_word}')
-        bot.get_random_word(update=update, context=context)  # Вызов функции random_word для зацикливания.
+        bot.get_random_word(update=update, context=context)
