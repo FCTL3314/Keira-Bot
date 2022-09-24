@@ -12,7 +12,7 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
     """Asks the User to enter a words. Entry-point of the ConversationHandler."""
     update.message.reply_text(
         text=f'Введи {configurations.config.NUMBER_OF_WORDS}'
-             f' {create_message_spelling()}\n'  # В зависимости от числа слов меняет написание.
+             f' {create_message_spelling()}\n'
              f'Слова необходимо разделить пробелом и записать в одну строку.\n'
              f'Пример: {create_enter_words_example()}'
     )
@@ -31,8 +31,7 @@ def create_enter_words_example(number_of_words=configurations.config.NUMBER_OF_W
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Gets user-entered words and .split() it."""
-    context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]  # Записывает
-    # слова в словарь.
+    context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]
     print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')
     if not check_number_of_words(learning_words=context.user_data['learning_words']):
         words_not_accepted(update=update, context=context, cause='Invalid number of words')
@@ -73,8 +72,7 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
                                    f'Далее тебе необходимо переводить слова:',
                               reply_markup=bot.create_keyboard_markup(context=context)
                               )
-    bot.get_random_word(update=update, context=context)  # Вызов функции random_word для генерации случайного
-    # слова из context.user_data['learning_words']
+    bot.get_random_word(update=update, context=context)
 
 
 def accepted_words_text(learning_words: list, learning_words_translated: list) -> str:
