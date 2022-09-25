@@ -32,13 +32,13 @@ def create_enter_words_example(number_of_words=configurations.config.NUMBER_OF_W
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Gets user-entered words and .split() it."""
     context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]
-    print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')
-    create_score_instance(update=update, context=context)
     if not check_number_of_words(learning_words=context.user_data['learning_words']):
         words_not_accepted(update=update, context=context, cause='Invalid number of words')
     elif not check_for_numbers(learning_words=context.user_data['learning_words']):
         words_not_accepted(update=update, context=context, cause='Words contain numbers')
     else:
+        print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')  # Вывод в консоль слов.
+        create_score_instance(update=update, context=context)
         send_words_accepted_message(update=update, context=context)
         return TRANSLATE_ENTERED_WORDS
 
