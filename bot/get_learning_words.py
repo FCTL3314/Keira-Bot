@@ -14,7 +14,8 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
         text=f'Введи {configurations.config.NUMBER_OF_WORDS}'
              f' {create_message_spelling()}\n'
              f'Слова необходимо разделить пробелом и записать в одну строку.\n'
-             f'Пример: {create_enter_words_example()}'
+             f'Пример: {create_enter_words_example()}',
+        disable_notification=True
     )
     return GET_ENTERED_WORDS
 
@@ -51,7 +52,8 @@ def create_score_instance(update: telegram.Update, context: telegram.ext.Callbac
 def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Stops the ConversationHandler."""
     update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /add что бы начать заново.',
-                              reply_markup=telegram.ReplyKeyboardRemove())
+                              reply_markup=telegram.ReplyKeyboardRemove(),
+                              disable_notification=True)
     return telegram.ext.ConversationHandler.END
 
 
@@ -68,7 +70,7 @@ def check_for_numbers(learning_words: list) -> bool:
 
 def send_words_accepted_message(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Sends 'words accepted message'. And generate random word from get_random_word function"""
-    update.message.reply_text(text='Обработка...')
+    update.message.reply_text(text='Обработка...', disable_notification=True)
     accepted_words = accepted_words_text(
         learning_words=context.user_data['learning_words'],
         learning_words_translated=translate_learning_words(context=context,
@@ -76,7 +78,8 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
     update.message.reply_text(text=f'Слова приняты:\n{accepted_words} '
                                    f'Если желаешь прекратить переводить, напиши /stop.\n'
                                    f'Далее тебе необходимо переводить слова:',
-                              reply_markup=bot.create_keyboard_markup(context=context)
+                              reply_markup=bot.create_keyboard_markup(context=context),
+                              disable_notification=True
                               )
     bot.get_random_word(update=update, context=context)
 
@@ -102,10 +105,12 @@ def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackCo
     if cause == 'Invalid number of words':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
-                 f'Кол-во твоих слов - {len(context.user_data["learning_words"])}.'
+                 f'Кол-во твоих слов - {len(context.user_data["learning_words"])}.',
+            disable_notification=True
         )
     if cause == 'Words contain numbers':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
-                 'Видимо, в введённых тобою словах имеются цифры.'
+                 'Видимо, в введённых тобою словах имеются цифры.',
+            disable_notification=True
         )
