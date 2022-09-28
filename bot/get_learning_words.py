@@ -46,7 +46,6 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
 
 def create_score_instance(update: telegram.Update, context: telegram.ext.CallbackContext):
     context.user_data[f'user_score: {update.message.chat_id}'] = bot.user_score.UserScore()
-    print(context.user_data[f'user_score: {update.message.chat_id}'])
 
 
 def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackContext):
