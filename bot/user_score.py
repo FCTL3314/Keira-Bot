@@ -5,6 +5,9 @@ class UserScore:
     def increment(self):
         self._score += 1
 
+    def decrement(self):
+        self._score -= 1
+
     def reset(self):
         self._score = 0
 
