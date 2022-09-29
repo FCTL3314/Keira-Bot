@@ -56,11 +56,11 @@ def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackCon
     return telegram.ext.ConversationHandler.END
 
 
-def check_number_of_words(learning_words: list, number_of_words=configurations.config.NUMBER_OF_WORDS) -> bool:
+def check_number_of_words(learning_words: List[str], number_of_words=configurations.config.NUMBER_OF_WORDS) -> bool:
     return len(learning_words) == number_of_words
 
 
-def check_for_numbers(learning_words: list) -> bool:
+def check_for_numbers(learning_words: List[str]) -> bool:
     for symbol in str(learning_words):
         if symbol.isdigit():
             return False
@@ -80,10 +80,10 @@ def words_accepted_message(update: telegram.Update, context: telegram.ext.Callba
                               reply_markup=bot.create_keyboard_markup(context=context),
                               disable_notification=True
                               )
-    bot.get_random_word(update=update, context=context)
+    bot.generate_random_word(update=update, context=context)
 
 
-def accepted_words_text(learning_words: list, learning_words_translated: list) -> str:
+def accepted_words_text(learning_words: List[str], learning_words_translated: List[str]) -> str:
     return ''.join(
         f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words_translated)))
 
