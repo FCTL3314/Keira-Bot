@@ -3,7 +3,7 @@ import bot
 import random
 
 
-def get_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext):
+def get_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
     """Gets the translated word from context.user_data['learning_words_translated']"""
     translated_word = context.user_data['learning_words_translated'][
         context.bot_data[f"ran_num: {update.message.chat_id}"]]
@@ -24,24 +24,19 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
     if context.user_data[f'user_score: {update.message.chat_id}'].get_score() == 5:
         update.message.reply_text(text=f'🟢5 раз подряд!\nПродолжай в том же духе!',
                                   disable_notification=True)
-        bot.get_random_word(update=update, context=context)
     elif context.user_data[f'user_score: {update.message.chat_id}'].get_score() == 10:
         update.message.reply_text(text=f'🟢10 раз подряд!\nМожет ты и так знаешь эти слова ?',
                                   disable_notification=True)
-        bot.get_random_word(update=update, context=context)
     elif context.user_data[f'user_score: {update.message.chat_id}'].get_score() == 20:
         update.message.reply_text(text=f'🟢20 раз подряд!\nТы явно выучил слова.',
                                   disable_notification=True)
-        bot.get_random_word(update=update, context=context)
     elif context.user_data[f'user_score: {update.message.chat_id}'].get_score() > 20:
         update.message.reply_text(
             text=f'🟢Серия верных ответов: {context.user_data[f"user_score: {update.message.chat_id}"].get_score()}!',
             disable_notification=True)
-        bot.get_random_word(update=update, context=context)
     else:
-        update.message.reply_text(text=f'🟢Верно!',
-                                  disable_notification=True)
-        bot.get_random_word(update=update, context=context)
+        update.message.reply_text(text=f'🟢Верно!', disable_notification=True)
+    bot.generate_random_word(update=update, context=context)
 
 
 def wrong_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
@@ -49,7 +44,7 @@ def wrong_answer_response(update: telegram.Update, context: telegram.ext.Callbac
     update.message.reply_text(
         text=f'🔴Неверно.\nПравильный вариант - {get_translated_word(update=update, context=context)}',
         disable_notification=True)
-    bot.get_random_word(update=update, context=context)
+    bot.generate_random_word(update=update, context=context)
 
 
 def reset_correct_answers_series(update: telegram.Update, context: telegram.ext.CallbackContext):
