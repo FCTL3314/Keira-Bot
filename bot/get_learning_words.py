@@ -40,7 +40,7 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     else:
         print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')  # Вывод в консоль слов.
         create_score_instance(update=update, context=context)
-        send_words_accepted_message(update=update, context=context)
+        words_accepted_message(update=update, context=context)
         return TRANSLATE_ENTERED_WORDS
 
 
@@ -67,7 +67,7 @@ def check_for_numbers(learning_words: list) -> bool:
     return True
 
 
-def send_words_accepted_message(update: telegram.Update, context: telegram.ext.CallbackContext):
+def words_accepted_message(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Sends 'words accepted message'. And generate random word from get_random_word function"""
     update.message.reply_text(text='Обработка...', disable_notification=True)
     accepted_words = accepted_words_text(
