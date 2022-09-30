@@ -6,7 +6,7 @@ import random
 def get_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
     """Gets the translated word from context.user_data['learning_words_translated']"""
     translated_word = context.user_data['learning_words_translated'][
-        context.bot_data[f"ran_num: {update.message.chat_id}"]]
+        context.bot_data[f"ran_num: {update.message.from_user.id}"]]
     return translated_word
 
 
@@ -20,7 +20,7 @@ def check_answer_correctness(update: telegram.Update, context: telegram.ext.Call
 
 
 def correct_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
-    user_score = context.user_data[f'user_score: {update.message.chat_id}']
+    user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     user_score.increment()
     match user_score.get_score():
         case 5:
@@ -38,7 +38,7 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
         case _ if user_score.get_score() > 20:
             update.message.reply_text(
                 text=f'🟢Серия верных ответов:'
-                     f' {context.user_data[f"user_score: {update.message.chat_id}"].get_score()}!',
+                     f' {context.user_data[f"user_score: {update.message.from_user.id}"].get_score()}!',
                 disable_notification=True)
         case _:
             update.message.reply_text(text=f'🟢Верно!', disable_notification=True)
@@ -54,7 +54,7 @@ def wrong_answer_response(update: telegram.Update, context: telegram.ext.Callbac
 
 
 def reset_correct_answers_series(update: telegram.Update, context: telegram.ext.CallbackContext):
-    user_score = context.user_data[f'user_score: {update.message.chat_id}']
+    user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     if 10 <= user_score.get_score() < 15:
         ran_num = random.randint(0, 2)
         match ran_num:
@@ -68,7 +68,7 @@ def reset_correct_answers_series(update: telegram.Update, context: telegram.ext.
                 update.message.reply_text(text=f'Зато теперь ты точно запомнишь это слово.',
                                           disable_notification=True)
     elif 15 <= user_score.get_score() < 20:
-        update.message.reply_text(text=f'Главное не останавливайся, у тебя всё получится! Ты почти у цели!.',
+        update.message.reply_text(text=f'Главное не останавливайся, у тебя всё получится! Ты был почти у цели!.',
                                   disable_notification=True)
 
-    context.user_data[f'user_score: {update.message.chat_id}'].reset()
+    context.user_data[f'user_score: {update.message.from_user.id}'].reset()
