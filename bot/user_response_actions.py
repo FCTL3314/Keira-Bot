@@ -3,7 +3,7 @@ import bot
 import random
 
 
-def get_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
+def get_random_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
     """Gets the translated word from context.user_data['learning_words_translated']"""
     translated_word = context.user_data['learning_words_translated'][
         context.bot_data[f"ran_num: {update.message.from_user.id}"]]
@@ -13,7 +13,7 @@ def get_translated_word(update: telegram.Update, context: telegram.ext.CallbackC
 def check_answer_correctness(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Checks the translated word entered by the user for correctness"""
     answer = update.message.text
-    if answer.lower() == get_translated_word(update=update, context=context).lower():
+    if answer.lower() == get_random_translated_word(update=update, context=context).lower():
         correct_answer_response(update=update, context=context)
     else:
         wrong_answer_response(update=update, context=context)
@@ -48,7 +48,7 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
 def wrong_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
     reset_correct_answers_series(update=update, context=context)
     update.message.reply_text(
-        text=f'🔴Неверно.\nПравильный вариант - {get_translated_word(update=update, context=context)}',
+        text=f'🔴Неверно.\nПравильный вариант - {get_random_translated_word(update=update, context=context)}',
         disable_notification=True)
     bot.generate_random_word(update=update, context=context)
 
