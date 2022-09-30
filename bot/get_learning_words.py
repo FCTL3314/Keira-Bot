@@ -3,9 +3,9 @@ import translators
 import bot
 import configurations.config
 
+from bot import GET_ENTERED_WORDS
+from bot import TRANSLATE_ENTERED_WORDS
 from typing import List
-
-GET_ENTERED_WORDS, TRANSLATE_ENTERED_WORDS = range(2)
 
 
 def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
