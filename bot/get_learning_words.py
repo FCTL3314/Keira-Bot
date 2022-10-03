@@ -1,6 +1,7 @@
 import telegram.ext
 import translators
 import bot
+import connectors
 import configurations.config
 
 from bot import GET_ENTERED_WORDS
@@ -33,14 +34,14 @@ def create_enter_words_example(number_of_words=configurations.config.NUMBER_OF_W
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Gets user-entered words and .split() it."""
     context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]
-    if not check_number_of_words(learning_words=context.user_data['learning_words']):
+    learning_words = context.user_data['learning_words']
+    if not check_number_of_words(learning_words=learning_words):
         words_not_accepted(update=update, context=context, cause='Invalid number of words')
-    elif not check_for_numbers(learning_words=context.user_data['learning_words']):
+    elif not check_for_numbers(learning_words=learning_words):
         words_not_accepted(update=update, context=context, cause='Words contain numbers')
     else:
-        bot.db_actions.db_write_last_learning_words(learning_words=context.user_data['learning_words'], update=update)
-        print(bot.db_actions.db_get_last_learning_words(update=update))
-        print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')  # Вывод в консоль слов.
+        connectors.db_actions.db_write_last_learning_words(learning_words=learning_words, update=update)
+        print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
         create_score_instance(update=update, context=context)
         words_accepted_message(update=update, context=context)
         return TRANSLATE_ENTERED_WORDS
