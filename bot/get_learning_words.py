@@ -47,15 +47,15 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
 
 
 def db_write_last_learning_words(learning_words, update: telegram.Update, context: telegram.ext.CallbackContext):
-    with sqlite3.connect('D:\Start Menu\Programming\Keira-Bot\data\data.db') as conn:
+    with sqlite3.connect('sqlite:///../data/data.db') as conn:
         cur = conn.cursor()
         cur.execute(f'SELECT user_id FROM user_data WHERE user_id = "{update.message.from_user.id}"')
         if cur.fetchone() is None:
-            cur.execute(f'INSERT INTO user_data (user_id, last_learning_words) VALUES ({update.message.from_user.id}, "{" ".join(learning_words)}")')
-            print('СОЗДАНА')
+            cur.execute(f'INSERT INTO user_data (user_id, last_learning_words)'
+                        f' VALUES ({update.message.from_user.id}, "{" ".join(learning_words)}")')
         else:
-            cur.execute(f'UPDATE user_data SET last_learning_words = "{" ".join(learning_words)}" WHERE user_id = {update.message.from_user.id}')
-            print('УЖЕ БЫЛА')
+            cur.execute(f'UPDATE user_data SET last_learning_words = "{" ".join(learning_words)}" '
+                        f'WHERE user_id = {update.message.from_user.id}')
 
 
 def create_score_instance(update: telegram.Update, context: telegram.ext.CallbackContext):
