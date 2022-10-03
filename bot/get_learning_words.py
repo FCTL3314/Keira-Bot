@@ -39,14 +39,15 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     elif not check_for_numbers(learning_words=context.user_data['learning_words']):
         words_not_accepted(update=update, context=context, cause='Words contain numbers')
     else:
-        db_write_last_learning_words(learning_words=context.user_data['learning_words'], update=update, context=context)
+        db_write_last_learning_words(learning_words=context.user_data['learning_words'], update=update)
+        print(db_get_last_learning_words(update=update))
         print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')  # Вывод в консоль слов.
         create_score_instance(update=update, context=context)
         words_accepted_message(update=update, context=context)
         return TRANSLATE_ENTERED_WORDS
 
 
-def db_write_last_learning_words(learning_words, update: telegram.Update, context: telegram.ext.CallbackContext):
+def db_write_last_learning_words(learning_words, update: telegram.Update):
     with sqlite3.connect('sqlite:///../data/data.db') as conn:
         cur = conn.cursor()
         cur.execute(f'SELECT user_id FROM user_data WHERE user_id = "{update.message.from_user.id}"')
@@ -56,6 +57,13 @@ def db_write_last_learning_words(learning_words, update: telegram.Update, contex
         else:
             cur.execute(f'UPDATE user_data SET last_learning_words = "{" ".join(learning_words)}" '
                         f'WHERE user_id = {update.message.from_user.id}')
+
+
+def db_get_last_learning_words(update: telegram.Update):
+    with sqlite3.connect('sqlite:///../data/data.db') as conn:
+        cur = conn.cursor()
+        cur.execute(f'SELECT last_learning_words FROM user_data WHERE user_id = "{update.message.from_user.id}"')
+        return ''.join(cur.fetchone()).split()
 
 
 def create_score_instance(update: telegram.Update, context: telegram.ext.CallbackContext):
