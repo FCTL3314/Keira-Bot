@@ -3,7 +3,7 @@ import telegram.ext
 
 
 def db_write_last_learning_words(learning_words, update: telegram.Update):
-    with sqlite3.connect('sqlite:///../data/data.db') as conn:
+    with sqlite3.connect('D:\\Start Menu\\Programming\\Keira-Bot\\connectors\\data\\data.db') as conn:
         cur = conn.cursor()
         cur.execute(f'SELECT user_id FROM user_data WHERE user_id = "{update.message.from_user.id}"')
         if cur.fetchone() is None:
@@ -15,7 +15,7 @@ def db_write_last_learning_words(learning_words, update: telegram.Update):
 
 
 def db_get_last_learning_words(update: telegram.Update):
-    with sqlite3.connect('sqlite:///../data/data.db') as conn:
+    with sqlite3.connect('D:\\Start Menu\\Programming\\Keira-Bot\\connectors\\data\\data.db') as conn:
         cur = conn.cursor()
         cur.execute(f'SELECT last_learning_words FROM user_data WHERE user_id = "{update.message.from_user.id}"')
         return ''.join(cur.fetchone()).split()
