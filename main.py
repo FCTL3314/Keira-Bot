@@ -4,6 +4,7 @@ import bot.get_learning_words
 import bot.user_response_actions
 import bot.start_command
 import bot.unexpected_messages_reply
+import bot.achievements_command
 
 from configurations.config import TOKEN
 
@@ -13,6 +14,7 @@ def main():
     updater = telegram.ext.Updater(token=TOKEN, use_context=True)
     dp = updater.dispatcher
     dp.add_handler(telegram.ext.CommandHandler(command='start', callback=bot.start_command.start_command))
+    dp.add_handler(telegram.ext.CommandHandler(command='achievements', callback=bot.achievements_command.send_achievements_message))
     dp.add_handler(telegram.ext.ConversationHandler(
         entry_points=[telegram.ext.CommandHandler('add', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
         states={
