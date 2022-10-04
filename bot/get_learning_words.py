@@ -1,6 +1,7 @@
 import telegram.ext
 import translators
 import bot
+import connectors.db_actions
 import configurations.config
 
 from bot import GET_ENTERED_WORDS
@@ -40,6 +41,7 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
         words_not_accepted(update=update, context=context, cause='Words contain numbers')
     else:
         print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
+        connectors.db_actions.db_create_user_info(update=update)
         create_score_instance(update=update, context=context)
         words_accepted_message(update=update, context=context)
         return TRANSLATE_ENTERED_WORDS
