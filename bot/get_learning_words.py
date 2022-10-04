@@ -1,7 +1,6 @@
 import telegram.ext
 import translators
 import bot
-import connectors
 import configurations.config
 
 from bot import GET_ENTERED_WORDS
@@ -40,7 +39,6 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     elif not check_for_numbers(learning_words=learning_words):
         words_not_accepted(update=update, context=context, cause='Words contain numbers')
     else:
-        connectors.db_actions.db_write_last_learning_words(learning_words=learning_words, update=update)
         print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
         create_score_instance(update=update, context=context)
         words_accepted_message(update=update, context=context)
@@ -56,6 +54,7 @@ def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackCon
     update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /add что бы начать заново.',
                               reply_markup=telegram.ReplyKeyboardRemove(),
                               disable_notification=True)
+    context.user_data[f'user_score: {update.message.from_user.id}'].reset()
     return telegram.ext.ConversationHandler.END
 
 
