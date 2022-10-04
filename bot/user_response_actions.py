@@ -1,6 +1,7 @@
 import telegram.ext
 import bot
 import random
+import connectors.db_actions
 
 
 def get_random_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
@@ -22,6 +23,9 @@ def check_answer_correctness(update: telegram.Update, context: telegram.ext.Call
 def correct_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     user_score.increment()
+    connectors.db_actions.db_update_best_score(score=user_score.get_score(), update=update)
+    words_concatenation = context.user_data['learning_words'] + connectors.db_actions.db_get_learned_words(
+        update=update)
     match user_score.get_score():
         case 5:
             update.message.reply_text(text=f'🟢5 раз подряд!\nПродолжай в том же духе!',
@@ -33,8 +37,10 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
             update.message.reply_text(text=f'🟢15 раз подряд!\nЕщё чуть-чуть и ты их выучишь! Я в тебя верю!',
                                       disable_notification=True)
         case 20:
-            update.message.reply_text(text=f'🟢20 раз подряд!\nПоздравляю! Ты выучил слова!',
+            update.message.reply_text(text=f'✅Поздравляю! Ты выучил слова!\n'
+                                           f'Они были добавлены в твою библиотеку.',
                                       disable_notification=True)
+            connectors.db_actions.db_add_learned_words(learned_words=words_concatenation, update=update)
         case _ if user_score.get_score() > 20:
             update.message.reply_text(
                 text=f'🟢Серия верных ответов:'
