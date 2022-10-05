@@ -3,8 +3,6 @@ import bot
 import random
 import connectors.db_actions
 
-from typing import List
-
 
 def get_random_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
     """Gets the translated word from context.user_data['learning_words_translated']"""
@@ -43,8 +41,7 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
                                            f'Далее ты можешь совершенствовать свою серию верных ответов,'
                                            f' либо написать /stop что бы перестать переводить.',
                                       disable_notification=True)
-            connectors.db_actions.db_add_learned_words(
-                learned_words=create_words_concatenation(update=update, context=context), update=update)
+            connectors.db_actions.db_add_learned_words(learned_words=context.user_data['learning_words'], update=update)
         case _ if user_score.get_score() > 20:
             update.message.reply_text(
                 text=f'🟢Серия верных ответов:'
@@ -53,15 +50,6 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
         case _:
             update.message.reply_text(text=f'🟢Верно!', disable_notification=True)
     bot.generate_random_word(update=update, context=context)
-
-
-def create_words_concatenation(update: telegram.Update, context: telegram.ext.CallbackContext) -> List[str]:
-    if connectors.db_actions.db_get_learned_words(update=update) is None:
-        words_concatenation = context.user_data['learning_words']
-    else:
-        words_concatenation = context.user_data['learning_words'] + connectors.db_actions.db_get_learned_words(
-            update=update)
-    return words_concatenation
 
 
 def wrong_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
