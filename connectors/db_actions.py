@@ -12,7 +12,7 @@ def db_create_user_info(update: telegram.Update):
             cur.execute(f'INSERT INTO user_data (user_id) VALUES ({update.message.from_user.id})')
 
 
-def db_add_learned_words(learned_words: set, update: telegram.Update):
+def db_add_learned_words(learned_words: List[str], update: telegram.Update):
     with sqlite3.connect('D:\\Start Menu\\Programming\\Keira-Bot\\connectors\\data\\data.db') as conn:
         cur = conn.cursor()
         cur.execute(f'SELECT learned_words FROM user_data WHERE user_id == {update.message.from_user.id}')
@@ -20,8 +20,10 @@ def db_add_learned_words(learned_words: set, update: telegram.Update):
             cur.execute(f'UPDATE user_data SET learned_words = '
                         f'"{" ".join(learned_words)}" WHERE user_id = {update.message.from_user.id}')
         else:
+            cur.execute(f'SELECT learned_words FROM user_data WHERE user_id == {update.message.from_user.id}')
+            learned_words_set = set(cur.fetchone()[0].split() + learned_words)
             cur.execute(f'UPDATE user_data SET learned_words = '
-                        f'learned_words || "{" ".join(learned_words)}" WHERE user_id = {update.message.from_user.id}')
+                        f'"{" ".join(learned_words_set)}" WHERE user_id = {update.message.from_user.id}')
 
 
 def db_update_best_score(score: int, update: telegram.Update):
