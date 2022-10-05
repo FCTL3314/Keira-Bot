@@ -36,9 +36,9 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]
     learning_words = context.user_data['learning_words']
     if not check_number_of_words(learning_words=learning_words):
-        words_not_accepted(update=update, context=context, cause='Invalid number of words')
+        words_not_accepted(update=update, context=context, cause='InvalidNumberOfWords')
     elif not check_for_numbers(learning_words=learning_words):
-        words_not_accepted(update=update, context=context, cause='Words contain numbers')
+        words_not_accepted(update=update, context=context, cause='WordsContainNumbers')
     else:
         print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
         connectors.db_actions.db_create_user_info(update=update)
@@ -105,13 +105,13 @@ def translate_learning_words(context: telegram.ext.CallbackContext, learning_wor
 
 def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackContext, cause):
     """Sends 'words not accepted' message."""
-    if cause == 'Invalid number of words':
+    if cause == 'InvalidNumberOfWords':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
                  f'Кол-во твоих слов - {len(context.user_data["learning_words"])}.',
             disable_notification=True
         )
-    if cause == 'Words contain numbers':
+    if cause == 'WordsContainNumbers':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
                  'Видимо, в введённых тобою словах имеются цифры.',
