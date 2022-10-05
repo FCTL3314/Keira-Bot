@@ -31,14 +31,17 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
             update.message.reply_text(text=f'🟢5 раз подряд!\nПродолжай в том же духе!',
                                       disable_notification=True)
         case 10:
-            update.message.reply_text(text=f'🟢10 раз подряд!\nТы уже на половине пути, осталось совсем ничего!',
+            update.message.reply_text(text=f'🟢10 раз подряд!\nТы уже на половине пути, не теряй энтузиазма!',
                                       disable_notification=True)
         case 15:
-            update.message.reply_text(text=f'🟢15 раз подряд!\nЕщё чуть-чуть и ты их выучишь! Я в тебя верю!',
+            update.message.reply_text(text=f'🟢15 раз подряд!\nЕщё чуть-чуть и ты их выучишь! Осталось совсем ничего!',
                                       disable_notification=True)
         case 20:
-            update.message.reply_text(text=f'✅Поздравляю! Ты выучил слова!\n'
-                                           f'Напиши /achievements что бы посмотреть свои достижения.',
+            update.message.reply_text(text=f'✅Поздравляю! Слова выучены!\n'
+                                           f'Написав команду /achievements, ты увидишь библиотеку выученных слов,'
+                                           f' а так же свой лучший счёт.\n'
+                                           f'Далее ты можешь совершенствовать свою серию верных ответов,'
+                                           f' либо написать /stop что бы перестать переводить.',
                                       disable_notification=True)
             connectors.db_actions.db_add_learned_words(
                 learned_words=create_words_concatenation(update=update, context=context), update=update)
@@ -64,21 +67,21 @@ def create_words_concatenation(update: telegram.Update, context: telegram.ext.Ca
 def wrong_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
     reset_correct_answers_series(update=update, context=context)
     update.message.reply_text(
-        text=f'🔴Неверно.\nПравильный вариант - {get_random_translated_word(update=update, context=context)}',
+        text=f'🔴Неверно.\nПравильный вариант - {get_random_translated_word(update=update, context=context)}.',
         disable_notification=True)
     bot.generate_random_word(update=update, context=context)
 
 
 def reset_correct_answers_series(update: telegram.Update, context: telegram.ext.CallbackContext):
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
-    if 10 <= user_score.get_score() < 15:
+    if 5 <= user_score.get_score() < 15:
         ran_num = random.randint(0, 2)
         match ran_num:
             case 0:
-                update.message.reply_text(text=f'Да, знаю. Обидно терять такую серию правильных ответов.',
+                update.message.reply_text(text=f'Да, знаю. Ошибки не самое приятное чувство.',
                                           disable_notification=True)
             case 1:
-                update.message.reply_text(text=f'Не переживай. Без ошибок эти слова явно не выучить.',
+                update.message.reply_text(text=f'Не переживай. Без ошибок эти слова уж точно не выучить.',
                                           disable_notification=True)
             case 2:
                 update.message.reply_text(text=f'Зато теперь ты точно запомнишь это слово.',
