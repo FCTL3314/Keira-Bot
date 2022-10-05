@@ -3,6 +3,8 @@ import bot
 import random
 import connectors.db_actions
 
+from typing import List
+
 
 def get_random_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
     """Gets the translated word from context.user_data['learning_words_translated']"""
@@ -50,7 +52,7 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
     bot.generate_random_word(update=update, context=context)
 
 
-def create_words_concatenation(update: telegram.Update, context: telegram.ext.CallbackContext):
+def create_words_concatenation(update: telegram.Update, context: telegram.ext.CallbackContext) -> List[str]:
     if connectors.db_actions.db_get_learned_words(update=update) is None:
         words_concatenation = context.user_data['learning_words']
     else:
