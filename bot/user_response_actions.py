@@ -24,8 +24,6 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     user_score.increment()
     connectors.db_actions.db_update_best_score(score=user_score.get_score(), update=update)
-    words_concatenation = context.user_data['learning_words'] + connectors.db_actions.db_get_learned_words(
-        update=update)
     match user_score.get_score():
         case 5:
             update.message.reply_text(text=f'🟢5 раз подряд!\nПродолжай в том же духе!',
@@ -40,7 +38,8 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
             update.message.reply_text(text=f'✅Поздравляю! Ты выучил слова!\n'
                                            f'Они были добавлены в твою библиотеку.',
                                       disable_notification=True)
-            connectors.db_actions.db_add_learned_words(learned_words=words_concatenation, update=update)
+            connectors.db_actions.db_add_learned_words(
+                learned_words=create_words_concatenation(update=update, context=context), update=update)
         case _ if user_score.get_score() > 20:
             update.message.reply_text(
                 text=f'🟢Серия верных ответов:'
@@ -49,6 +48,15 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
         case _:
             update.message.reply_text(text=f'🟢Верно!', disable_notification=True)
     bot.generate_random_word(update=update, context=context)
+
+
+def create_words_concatenation(update: telegram.Update, context: telegram.ext.CallbackContext):
+    if connectors.db_actions.db_get_learned_words(update=update) is None:
+        words_concatenation = context.user_data['learning_words']
+    else:
+        words_concatenation = context.user_data['learning_words'] + connectors.db_actions.db_get_learned_words(
+            update=update)
+    return words_concatenation
 
 
 def wrong_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
