@@ -13,4 +13,4 @@ def send_achievements_message(update: telegram.Update, context: telegram.ext.Cal
             update.message.reply_text(text=f'Однако твой лучший счёт - {best_score}')
     else:
         update.message.reply_text(text=f'Библиотека твоих слов:\n{", ".join(learned_words)}.')
-        update.message.reply_text(text=f'Твоя лучшая серия правильных ответов - {best_score}')
+        update.message.reply_text(text=f'Твой лучший счёт - {best_score}')
