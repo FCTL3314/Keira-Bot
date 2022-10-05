@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # Data
-connectors/data/data.db
+!/connectors/data/data.db
