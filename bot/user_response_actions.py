@@ -36,7 +36,7 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
                                       disable_notification=True)
         case 20:
             update.message.reply_text(text=f'✅Поздравляю! Ты выучил слова!\n'
-                                           f'Они были добавлены в твою библиотеку.',
+                                           f'Напиши /achievements что бы посмотреть свои достижения.',
                                       disable_notification=True)
             connectors.db_actions.db_add_learned_words(
                 learned_words=create_words_concatenation(update=update, context=context), update=update)
