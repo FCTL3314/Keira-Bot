@@ -18,6 +18,7 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
              f'Пример: {create_enter_words_example()}',
         disable_notification=True
     )
+    create_score_instance(update=update, context=context)
     return GET_ENTERED_WORDS
 
 
@@ -42,7 +43,6 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
     else:
         print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
         connectors.db_actions.db_create_user_info(update=update)
-        create_score_instance(update=update, context=context)
         words_accepted_message(update=update, context=context)
         return TRANSLATE_ENTERED_WORDS
 
