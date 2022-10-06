@@ -17,7 +17,7 @@ def main():
     dp.add_handler(telegram.ext.CommandHandler(command='achievements',
                                                callback=bot.achievements_command.send_achievements_message))
     dp.add_handler(telegram.ext.ConversationHandler(
-        entry_points=[telegram.ext.CommandHandler('add', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
+        entry_points=[telegram.ext.CommandHandler('set', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
         states={
             bot.get_learning_words.GET_ENTERED_WORDS: [
                 telegram.ext.MessageHandler(
