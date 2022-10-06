@@ -1,9 +1,6 @@
 import telegram
 import telegram.ext
-import bot.get_learning_words
-import bot.user_response_actions
-import bot.start_command
-import bot.unexpected_messages_reply
+import bot
 
 from configurations.config import TOKEN
 
@@ -13,16 +10,18 @@ def main():
     updater = telegram.ext.Updater(token=TOKEN, use_context=True)
     dp = updater.dispatcher
     dp.add_handler(telegram.ext.CommandHandler(command='start', callback=bot.start_command.start_command))
+    dp.add_handler(telegram.ext.CommandHandler(command='achievements',
+                                               callback=bot.achievements_command.send_achievements_message))
     dp.add_handler(telegram.ext.ConversationHandler(
-        entry_points=[telegram.ext.CommandHandler('add', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
+        entry_points=[telegram.ext.CommandHandler('set', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
         states={
-            bot.get_learning_words.GET_ENTERED_WORDS: [
+            bot.get_learning_words.GET_LEARNING_WORDS_STATE: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
                     callback=bot.get_learning_words.get_learning_words,
                     pass_user_data=True),
             ],
-            bot.get_learning_words.TRANSLATE_ENTERED_WORDS: [
+            bot.get_learning_words.CHECK_ANSWER_CORRECTNESS_STATE: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
                     callback=bot.user_response_actions.check_answer_correctness,
