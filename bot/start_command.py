@@ -8,10 +8,10 @@ def start_command(update: telegram.Update, context: telegram.ext.CallbackContext
         disable_notification=True
     )
     update.message.reply_text(text=f'Я буду помогать тебе изучать иностранные слова.\n'
-                                   f'Сперва напиши команду /add, что бы добавить их.\n'
+                                   f'Сперва напиши команду /set, что бы установить их.\n'
                                    f'Язык написанных тобою слов определяется автоматически.',
                               disable_notification=True)
-    update.message.reply_text(text=f'Слова, которые ты выучил, добавляются к тебе в библиотеку.\n'
+    update.message.reply_text(text=f'Слова, которые ты выучил, добавляются в твою библиотеку.\n'
                                    f'Для того что бы выучить слова, тебе необходимо их верно переводить до тех пор,'
                                    f' пока не появится соответствующее сообщение.',
                               disable_notification=True)
