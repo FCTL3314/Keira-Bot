@@ -5,16 +5,16 @@ import connectors.db_actions
 
 
 def get_random_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
-    """Gets the translated word from context.user_data['learning_words_translated']"""
-    translated_word = context.user_data['learning_words_translated'][
-        context.bot_data[f"ran_num: {update.message.from_user.id}"]]
-    return translated_word
+    """
+    Gets the predetermined random translated word, using [f"ran_num: {update.message.from_user.id}"] as a
+    specific user keyword.
+    """
+    return context.user_data['learning_words_translated'][context.bot_data[f"ran_num: {update.message.from_user.id}"]]
 
 
 def check_answer_correctness(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Checks the translated word entered by the user for correctness"""
-    answer = update.message.text
-    if answer.lower() == get_random_translated_word(update=update, context=context).lower():
+    if update.message.text.lower() == get_random_translated_word(update=update, context=context).lower():
         correct_answer_response(update=update, context=context)
     else:
         wrong_answer_response(update=update, context=context)
@@ -23,7 +23,13 @@ def check_answer_correctness(update: telegram.Update, context: telegram.ext.Call
 def correct_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     user_score.increment()
-    connectors.db_actions.db_update_best_score(score=user_score.get_score(), update=update)
+    if connectors.db_actions.db_get_best_score(update=update) < user_score.get_score():
+        connectors.db_actions.db_update_best_score(score=user_score.get_score(), update=update)
+    send_correct_answer_message(user_score=user_score, update=update, context=context)
+    bot.send_random_word(update=update, context=context)
+
+
+def send_correct_answer_message(user_score, update: telegram.Update, context: telegram.ext.CallbackContext):
     if user_score.get_score() <= 20:
         match user_score.get_score():
             case 5:
@@ -51,35 +57,49 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
             text=f'🟢Серия верных ответов: '
                  f'{context.user_data[f"user_score: {update.message.from_user.id}"].get_score()}!',
             disable_notification=True)
-    bot.generate_random_word(update=update, context=context)
 
 
 def wrong_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
-    update.message.reply_text(
-        text=f'🔴Неверно.\nПравильный вариант - {get_random_translated_word(update=update, context=context)}.',
-        disable_notification=True)
-    reset_correct_answers_series(update=update, context=context)
-    bot.generate_random_word(update=update, context=context)
-
-
-def reset_correct_answers_series(update: telegram.Update, context: telegram.ext.CallbackContext):
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
+    send_wrong_answer_message(user_score=user_score, update=update, context=context)
+    user_score.reset()
+    bot.send_random_word(update=update, context=context)
+
+
+def send_wrong_answer_message(user_score, update: telegram.Update, context: telegram.ext.CallbackContext):
     if 5 <= user_score.get_score() < 15:
         ran_num = random.randint(0, 2)
         match ran_num:
             case 0:
-                update.message.reply_text(text=f'Да, знаю. Ошибки не самое приятное чувство.',
-                                          disable_notification=True)
+                update.message.reply_text(
+                    text=f'🔴Неверно.\nПравильный вариант - '
+                         f'{get_random_translated_word(update=update, context=context)}.\n'
+                         f'Да, знаю. Ошибки не самое приятное чувство.',
+                    disable_notification=True)
             case 1:
-                update.message.reply_text(text=f'Без ошибок эти слова уж точно не выучить.',
-                                          disable_notification=True)
+                update.message.reply_text(
+                    text=f'🔴Неверно.\nПравильный вариант - '
+                         f'{get_random_translated_word(update=update, context=context)}.\n'
+                         f'Без ошибок эти слова уж точно не выучить.',
+                    disable_notification=True)
             case 2:
-                update.message.reply_text(text=f'Теперь-то уж ты точно запомнишь это слово.',
-                                          disable_notification=True)
+                update.message.reply_text(
+                    text=f'🔴Неверно.\nПравильный вариант - '
+                         f'{get_random_translated_word(update=update, context=context)}.\n'
+                         f'Теперь-то уж ты точно запомнишь это слово.',
+                    disable_notification=True)
     elif 15 <= user_score.get_score() < 20:
-        update.message.reply_text(text=f'Ничего страшного, ты был почти у цели!.',
-                                  disable_notification=True)
+        update.message.reply_text(
+            text=f'🔴Неверно.\nПравильный вариант - '
+                 f'{get_random_translated_word(update=update, context=context)}.\n'
+                 f'Ничего страшного, ты был почти у цели!',
+            disable_notification=True)
     elif user_score.get_score() > 20:
-        update.message.reply_text(text='Ничто в мире не бесконечно, как и твоя серия верных ответов.')
-
-    context.user_data[f'user_score: {update.message.from_user.id}'].reset()
+        update.message.reply_text(
+            text=f'🔴Неверно.\nПравильный вариант - '
+                 f'{get_random_translated_word(update=update, context=context)}.\n'
+                 'Ничто в мире не бесконечно, как и твоя серия верных ответов.')
+    else:
+        update.message.reply_text(
+            text=f'🔴Неверно.\nПравильный вариант - {get_random_translated_word(update=update, context=context)}.',
+            disable_notification=True)
