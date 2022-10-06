@@ -100,16 +100,14 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
 def translate_learning_words(context: telegram.ext.CallbackContext, learning_words: List[str],
                              from_language=configurations.config.FROM_LANGUAGE,
                              to_language=configurations.config.TO_LANGUAGE) -> List[str]:
-    """Translates user entered words."""
     context.user_data['learning_words_translated'] = [translators.google(query_text=learning_words[word],
                                                                          from_language=from_language,
-                                                                         to_language=to_language) for word in
-                                                      range(len(learning_words))]
+                                                                         to_language=to_language)
+                                                      for word in range(len(learning_words))]
     return [word.capitalize() for word in context.user_data['learning_words_translated']]
 
 
-def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackContext, cause):
-    """Sends 'words not accepted' message."""
+def words_not_accepted(cause: str, update: telegram.Update, context: telegram.ext.CallbackContext):
     if cause == 'InvalidNumberOfWords':
         update.message.reply_text(
             text='Ой, что-то пошло не так:\n'
