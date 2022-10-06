@@ -20,17 +20,17 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
         text=f'Введи {number_of_words}'
              f' {"изучаемых иностранных слова." if 5 > number_of_words > 1 else "изучаемых иностранных слов."}\n'
              f'Слова необходимо разделить пробелом и записать в одну строку.\n'
-             f'Пример: {create_enter_words_example()}',
+             f'Пример: {create_input_words_example()}',
         disable_notification=True
     )
     create_score_instance(update=update, context=context)
     return GET_ENTERED_WORDS
 
 
-def create_enter_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
+def create_input_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
     """Return string with the number of words equal to configurations.settings.NUMBER_OF_WORDS."""
     words = ['Berries', 'Apple', 'Cinnamon', 'Coffee', 'Milk', 'Cookies']
-    return ' '.join(words[i] for i in range(number_of_words))
+    return ' '.join(words[:number_of_words])
 
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
