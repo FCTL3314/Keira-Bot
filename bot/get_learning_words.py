@@ -9,21 +9,22 @@ from bot import TRANSLATE_ENTERED_WORDS
 from typing import List
 
 
-def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
-    """Asks the User to enter a words. Entry-point of the ConversationHandler."""
+def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext,
+                   number_of_words=configurations.config.NUMBER_OF_WORDS) -> int:
+    """
+    Asks the User to enter a words(Entry-point of the ConversationHandler).
+    Creates a score instance for a specific user.
+    :return: number 1 for conversation handler state.
+    """
     update.message.reply_text(
-        text=f'Введи {configurations.config.NUMBER_OF_WORDS}'
-             f' {create_message_spelling()}\n'
+        text=f'Введи {number_of_words}'
+             f' {"изучаемых иностранных слова." if 5 > number_of_words > 1 else "изучаемых иностранных слов."}\n'
              f'Слова необходимо разделить пробелом и записать в одну строку.\n'
              f'Пример: {create_enter_words_example()}',
         disable_notification=True
     )
     create_score_instance(update=update, context=context)
     return GET_ENTERED_WORDS
-
-
-def create_message_spelling(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
-    return 'изучаемых иностранных слова.' if 5 > number_of_words > 1 else 'изучаемых иностранных слов.'
 
 
 def create_enter_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
@@ -81,10 +82,11 @@ def words_accepted_message(update: telegram.Update, context: telegram.ext.Callba
     update.message.reply_text(text=f'Слова приняты:\n{accepted_words}'
                                    f'Изъявив желание прекратить переводить, напиши /stop.\n'
                                    f'Далее тебе необходимо переводить слова:',
-                              reply_markup=bot.create_keyboard_markup(context=context),
+                              reply_markup=bot.create_keyboard_markup(
+                                  translated_words=context.user_data['learning_words_translated']),
                               disable_notification=True
                               )
-    bot.generate_random_word(update=update, context=context)
+    bot.send_random_word(update=update, context=context)
 
 
 def accepted_words_text(learning_words: List[str], learning_words_translated: List[str]) -> str:
