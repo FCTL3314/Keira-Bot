@@ -34,43 +34,42 @@ def create_input_words_example(number_of_words=configurations.config.NUMBER_OF_W
     return ' '.join(words[:number_of_words])
 
 
-def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext):
+def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
     """Gets user-entered words and writes is to context dict."""
     context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]
-    validate_learning_words(learning_words=context.user_data['learning_words'], update=update, context=context)
-
-
-def validate_learning_words(learning_words: List[str], update: telegram.Update, context: telegram.ext.CallbackContext):
-    """
-    Validate learning_words for correctness
-    :return: number 1 for conversation handler state.
-    """
-    if not check_number_of_words(learning_words=learning_words):
-        words_not_accepted(update=update, context=context, cause='InvalidNumberOfWords')
-    elif not check_for_numbers(learning_words=learning_words):
-        words_not_accepted(update=update, context=context, cause='WordsContainNumbers')
-    else:
-        print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
-        connectors.db_actions.db_create_user_info(update=update)
-        words_accepted_message(update=update, context=context)
+    if validate_learning_words(learning_words=context.user_data['learning_words'], update=update, context=context):
+        print(f'{update.message.from_user.name} - {context.user_data["learning_words"]}')
         return CHECK_ANSWER_CORRECTNESS_STATE
 
 
+def validate_learning_words(learning_words: List[str], update: telegram.Update,
+                            context: telegram.ext.CallbackContext,
+                            number_of_words=configurations.config.NUMBER_OF_WORDS) -> bool:
+    """
+    Validate learning_words for correctness.
+    :return: number 1 for conversation handler state.
+    """
+    if not check_for_numbers(learning_words=learning_words):
+        words_not_accepted(update=update, context=context, cause='WordsContainNumbers')
+    elif not len(learning_words) == number_of_words:
+        words_not_accepted(update=update, context=context, cause='InvalidNumberOfWords')
+    else:
+        connectors.db_actions.db_create_user_info(update=update)
+        send_words_accepted_message(update=update, context=context)
+        return True
+
+
 def create_score_instance(update: telegram.Update, context: telegram.ext.CallbackContext):
+    """"Creates a score instance for the specific user based on its id"""
     context.user_data[f'user_score: {update.message.chat_id}'] = bot.user_score.UserScore()
 
 
 def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackContext):
-    """Stops the ConversationHandler."""
-    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /set что бы начать заново.',
+    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /set если желаете начать заново.',
                               reply_markup=telegram.ReplyKeyboardRemove(),
                               disable_notification=True)
     context.user_data[f'user_score: {update.message.from_user.id}'].reset()
     return telegram.ext.ConversationHandler.END
-
-
-def check_number_of_words(learning_words: List[str], number_of_words=configurations.config.NUMBER_OF_WORDS) -> bool:
-    return len(learning_words) == number_of_words
 
 
 def check_for_numbers(learning_words: List[str]) -> bool:
@@ -80,13 +79,14 @@ def check_for_numbers(learning_words: List[str]) -> bool:
     return True
 
 
-def words_accepted_message(update: telegram.Update, context: telegram.ext.CallbackContext):
-    """Sends 'words accepted message'. And generate random word from get_random_word function"""
+def send_words_accepted_message(update: telegram.Update, context: telegram.ext.CallbackContext):
+    """Sends 'words accepted message'. And sends a random word."""
     update.message.reply_text(text='Обработка...', disable_notification=True)
-    accepted_words = accepted_words_text(
-        learning_words=context.user_data['learning_words'],
-        learning_words_translated=translate_learning_words(context=context,
-                                                           learning_words=context.user_data['learning_words'], ))
+    learning_words = context.user_data['learning_words']
+    learning_words_translated = translate_learning_words(context=context,
+                                                         learning_words=context.user_data['learning_words'])
+    accepted_words = ''.join(
+        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words)))
     update.message.reply_text(text=f'Слова приняты:\n{accepted_words}'
                                    f'Изъявив желание прекратить переводить, напиши /stop.\n'
                                    f'Далее тебе необходимо переводить слова:',
@@ -95,11 +95,6 @@ def words_accepted_message(update: telegram.Update, context: telegram.ext.Callba
                               disable_notification=True
                               )
     bot.send_random_word(update=update, context=context)
-
-
-def accepted_words_text(learning_words: List[str], learning_words_translated: List[str]) -> str:
-    return ''.join(
-        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words_translated)))
 
 
 def translate_learning_words(context: telegram.ext.CallbackContext, learning_words: List[str],
