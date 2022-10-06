@@ -2,7 +2,7 @@ import telegram.ext
 import translators
 import bot
 import connectors
-import configurations.config
+import configurations
 
 from bot import GET_LEARNING_WORDS_STATE
 from bot import CHECK_ANSWER_CORRECTNESS_STATE

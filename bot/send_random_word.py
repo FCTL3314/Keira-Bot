@@ -1,6 +1,6 @@
 import telegram.ext
 import random
-import configurations.config
+import configurations
 
 
 def send_random_word(update: telegram.Update, context: telegram.ext.CallbackContext):
