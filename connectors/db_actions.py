@@ -29,9 +29,7 @@ def db_add_learned_words(learned_words: List[str], update: telegram.Update):
 def db_update_best_score(score: int, update: telegram.Update):
     with sqlite3.connect('D:\\Start Menu\\Programming\\Keira-Bot\\connectors\\data\\data.db') as conn:
         cur = conn.cursor()
-        cur.execute(f'SELECT best_score FROM user_data WHERE user_id == {update.message.from_user.id}')
-        if cur.fetchone()[0] < score:
-            cur.execute(f'UPDATE user_data SET best_score = {score} WHERE user_id == {update.message.from_user.id}')
+        cur.execute(f'UPDATE user_data SET best_score = {score} WHERE user_id == {update.message.from_user.id}')
 
 
 def db_get_learned_words(update: telegram.Update) -> List[str]:
