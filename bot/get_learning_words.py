@@ -90,11 +90,11 @@ def send_words_accepted_message(update: telegram.Update, context: telegram.ext.C
     update.message.reply_text(text=f'Слова приняты:\n{accepted_words}'
                                    f'Изъявив желание прекратить переводить, напиши /stop.\n'
                                    f'Далее тебе необходимо переводить слова:',
-                              reply_markup=bot.create_keyboard_markup(
+                              reply_markup=bot.create_keyboard_markup.create_keyboard_markup(
                                   translated_words=context.user_data['learning_words_translated']),
                               disable_notification=True
                               )
-    bot.send_random_word(update=update, context=context)
+    bot.send_random_word.send_random_word(update=update, context=context)
 
 
 def translate_learning_words(context: telegram.ext.CallbackContext, learning_words: List[str],

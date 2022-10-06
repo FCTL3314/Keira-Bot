@@ -26,7 +26,7 @@ def correct_answer_response(update: telegram.Update, context: telegram.ext.Callb
     if connectors.db_actions.db_get_best_score(update=update) < user_score.get_score():
         connectors.db_actions.db_update_best_score(score=user_score.get_score(), update=update)
     send_correct_answer_message(user_score=user_score, update=update, context=context)
-    bot.send_random_word(update=update, context=context)
+    bot.send_random_word.send_random_word(update=update, context=context)
 
 
 def send_correct_answer_message(user_score, update: telegram.Update, context: telegram.ext.CallbackContext):
@@ -63,7 +63,7 @@ def wrong_answer_response(update: telegram.Update, context: telegram.ext.Callbac
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     send_wrong_answer_message(user_score=user_score, update=update, context=context)
     user_score.reset()
-    bot.send_random_word(update=update, context=context)
+    bot.send_random_word.send_random_word(update=update, context=context)
 
 
 def send_wrong_answer_message(user_score, update: telegram.Update, context: telegram.ext.CallbackContext):

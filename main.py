@@ -1,10 +1,6 @@
 import telegram
 import telegram.ext
-import bot.get_learning_words
-import bot.user_response_actions
-import bot.start_command
-import bot.unexpected_messages_reply
-import bot.achievements_command
+import bot
 
 from configurations.config import TOKEN
 
