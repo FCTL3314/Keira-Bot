@@ -1,7 +1,7 @@
 import telegram.ext
 import translators
 import bot
-import connectors.db_actions
+import connectors
 import configurations.config
 
 from bot import GET_LEARNING_WORDS_STATE

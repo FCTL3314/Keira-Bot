@@ -1,5 +1,5 @@
 import telegram.ext
-import connectors.db_actions
+import connectors
 
 
 def send_achievements_message(update: telegram.Update, context: telegram.ext.CallbackContext):

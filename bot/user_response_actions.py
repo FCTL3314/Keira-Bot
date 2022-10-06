@@ -1,7 +1,7 @@
 import telegram.ext
 import bot
 import random
-import connectors.db_actions
+import connectors
 
 
 def get_random_translated_word(update: telegram.Update, context: telegram.ext.CallbackContext) -> str:
