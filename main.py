@@ -19,13 +19,13 @@ def main():
     dp.add_handler(telegram.ext.ConversationHandler(
         entry_points=[telegram.ext.CommandHandler('set', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
         states={
-            bot.get_learning_words.GET_ENTERED_WORDS: [
+            bot.get_learning_words.GET_LEARNING_WORDS: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
                     callback=bot.get_learning_words.get_learning_words,
                     pass_user_data=True),
             ],
-            bot.get_learning_words.TRANSLATE_ENTERED_WORDS: [
+            bot.get_learning_words.CHECK_ANSWER_CORRECTNESS: [
                 telegram.ext.MessageHandler(
                     filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
                     callback=bot.user_response_actions.check_answer_correctness,

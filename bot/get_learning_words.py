@@ -4,17 +4,18 @@ import bot
 import connectors.db_actions
 import configurations.config
 
-from bot import GET_ENTERED_WORDS
-from bot import TRANSLATE_ENTERED_WORDS
+from bot import GET_LEARNING_WORDS
+from bot import CHECK_ANSWER_CORRECTNESS
 from typing import List
 
 
 def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext,
                    number_of_words=configurations.config.NUMBER_OF_WORDS) -> int:
     """
-    Asks the User to enter a words(Entry-point of the ConversationHandler).
+    Entry-point of the ConversationHandler
+    Asks the User to enter a words.
     Creates a score instance for a specific user.
-    :return: number 1 for conversation handler state.
+    :return: number 0 for conversation handler state.
     """
     update.message.reply_text(
         text=f'Введи {number_of_words}'
@@ -24,7 +25,7 @@ def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContex
         disable_notification=True
     )
     create_score_instance(update=update, context=context)
-    return GET_ENTERED_WORDS
+    return GET_LEARNING_WORDS
 
 
 def create_input_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
@@ -34,7 +35,10 @@ def create_input_words_example(number_of_words=configurations.config.NUMBER_OF_W
 
 
 def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackContext) -> int:
-    """Gets user-entered words and .split() it."""
+    """
+    Gets user-entered words and .split() it.
+    :return: number 1 for conversation handler state.
+    """
     context.user_data['learning_words'] = [word.capitalize() for word in update.message.text.split()]
     learning_words = context.user_data['learning_words']
     if not check_number_of_words(learning_words=learning_words):
@@ -45,7 +49,7 @@ def get_learning_words(update: telegram.Update, context: telegram.ext.CallbackCo
         print(f'{update.message.from_user.name} - {learning_words}')  # Вывод в консоль слов.
         connectors.db_actions.db_create_user_info(update=update)
         words_accepted_message(update=update, context=context)
-        return TRANSLATE_ENTERED_WORDS
+        return CHECK_ANSWER_CORRECTNESS
 
 
 def create_score_instance(update: telegram.Update, context: telegram.ext.CallbackContext):
