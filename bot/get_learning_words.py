@@ -4,9 +4,10 @@ import bot
 import connectors
 import configurations
 
-from bot import GET_LEARNING_WORDS_STATE
-from bot import CHECK_ANSWER_CORRECTNESS_STATE
 from typing import List
+
+
+GET_LEARNING_WORDS_STATE, CHECK_ANSWER_CORRECTNESS_STATE = range(2)
 
 
 def asks_for_words(update: telegram.Update, context: telegram.ext.CallbackContext,
