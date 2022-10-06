@@ -53,7 +53,7 @@ def create_score_instance(update: telegram.Update, context: telegram.ext.Callbac
 
 def stop_conversation(update: telegram.Update, context: telegram.ext.CallbackContext):
     """Stops the ConversationHandler."""
-    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /add что бы начать заново.',
+    update.message.reply_text(text='Поняла, останавливаюсь...\nНапишите /set что бы начать заново.',
                               reply_markup=telegram.ReplyKeyboardRemove(),
                               disable_notification=True)
     context.user_data[f'user_score: {update.message.from_user.id}'].reset()
@@ -78,8 +78,8 @@ def words_accepted_message(update: telegram.Update, context: telegram.ext.Callba
         learning_words=context.user_data['learning_words'],
         learning_words_translated=translate_learning_words(context=context,
                                                            learning_words=context.user_data['learning_words'], ))
-    update.message.reply_text(text=f'Слова приняты:\n{accepted_words} '
-                                   f'Если желаешь прекратить переводить, напиши /stop.\n'
+    update.message.reply_text(text=f'Слова приняты:\n{accepted_words}'
+                                   f'Изъявив желание прекратить переводить, напиши /stop.\n'
                                    f'Далее тебе необходимо переводить слова:',
                               reply_markup=bot.create_keyboard_markup(context=context),
                               disable_notification=True
@@ -100,7 +100,7 @@ def translate_learning_words(context: telegram.ext.CallbackContext, learning_wor
                                                                          from_language=from_language,
                                                                          to_language=to_language) for word in
                                                       range(len(learning_words))]
-    return context.user_data['learning_words_translated']
+    return [word.capitalize() for word in context.user_data['learning_words_translated']]
 
 
 def words_not_accepted(update: telegram.Update, context: telegram.ext.CallbackContext, cause):
