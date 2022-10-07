@@ -10,7 +10,8 @@ class DataBase:
         self.__cur = self.__conn.cursor()
 
     def find_user_id_record(self, update: telegram.Update) -> bool:
-        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{update.message.from_user.id}"')
+        with self.__conn:
+            self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{update.message.from_user.id}"')
         return bool(self.__cur.fetchone())
 
     def create_user_record(self, update: telegram.Update):
