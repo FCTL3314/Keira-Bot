@@ -1,7 +1,6 @@
 import telegram.ext
 import translators
 import bot
-import connectors
 import configurations
 
 from typing import List
@@ -55,7 +54,6 @@ def validate_learning_words(learning_words: List[str], update: telegram.Update,
     elif not len(learning_words) == number_of_words:
         words_not_accepted(update=update, context=context, cause='InvalidNumberOfWords')
     else:
-        connectors.db_actions.db_create_user_info(update=update)
         send_words_accepted_message(update=update, context=context)
         return True
 
