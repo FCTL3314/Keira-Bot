@@ -23,8 +23,8 @@ def check_answer_correctness(update: telegram.Update, context: telegram.ext.Call
 def correct_answer_response(update: telegram.Update, context: telegram.ext.CallbackContext):
     user_score = context.user_data[f'user_score: {update.message.from_user.id}']
     user_score.increment()
-    if connectors.db_actions.db_get_best_score(update=update) < user_score.get_score():
-        connectors.db_actions.db_update_best_score(score=user_score.get_score(), update=update)
+    if connectors.db_actions.data_base.get_best_score(update=update) < user_score.get_score():
+        connectors.db_actions.data_base.update_best_score(score=user_score.get_score(), update=update)
     send_correct_answer_message(user_score=user_score, update=update, context=context)
     bot.send_random_word.send_random_word(update=update, context=context)
 
@@ -48,8 +48,8 @@ def send_correct_answer_message(user_score, update: telegram.Update, context: te
                                                f'Далее ты можешь совершенствовать свою серию верных ответов, '
                                                f'либо написать /stop что бы перестать переводить.',
                                           disable_notification=True)
-                connectors.db_actions.db_add_learned_words(learned_words=context.user_data['learning_words'],
-                                                           update=update)
+                connectors.db_actions.data_base.add_learned_words(learned_words=context.user_data['learning_words'],
+                                                                  update=update)
             case _:
                 update.message.reply_text(text=f'🟢Верно!', disable_notification=True)
     elif user_score.get_score() > 20:

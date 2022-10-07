@@ -3,8 +3,8 @@ import connectors
 
 
 def send_achievements_message(update: telegram.Update, context: telegram.ext.CallbackContext):
-    learned_words = connectors.db_actions.db_get_learned_words(update=update)
-    best_score = connectors.db_actions.db_get_best_score(update=update)
+    learned_words = connectors.db_actions.data_base.get_learned_words(update=update)
+    best_score = connectors.db_actions.data_base.get_best_score(update=update)
     if learned_words is None:
         update.message.reply_text(text=f'Что-то я не могу найти слов в твоей библиотеке...')
         if best_score == 0:
