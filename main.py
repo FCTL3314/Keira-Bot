@@ -9,6 +9,7 @@ def main():
     src.start_command.register_start_command_handlers(dp=dp)
     src.achievements_command.register_achievements_command_handlers(dp=dp)
     src.get_learning_words.register_get_learning_words_handlers(dp=dp)
+    src.unexpected_messages_reply.register_unexpected_message_handler(dp=dp)
 
     aiogram.executor.start_polling(dispatcher=dp, skip_updates=True)
 

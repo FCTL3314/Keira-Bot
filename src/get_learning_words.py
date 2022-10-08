@@ -6,12 +6,11 @@ import create_bot
 
 from typing import List
 from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.dispatcher import FSMContext
 
 
 class Steps(StatesGroup):
-    GET_LEARNING_WORDS_STATE = State()
-    CHECK_ANSWER_CORRECTNESS_STATE = State()
+    get_learning_words_state = State()
+    check_answer_correctness_state = State()
 
 
 async def asks_for_words(message: aiogram.types.Message, number_of_words=configurations.config.NUMBER_OF_WORDS):
@@ -29,7 +28,7 @@ async def asks_for_words(message: aiogram.types.Message, number_of_words=configu
         disable_notification=True
     )
     await create_score_instance(message=message)
-    await Steps.GET_LEARNING_WORDS_STATE.set()
+    await Steps.get_learning_words_state.set()
 
 
 async def create_input_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
@@ -50,7 +49,7 @@ async def get_learning_words(message: aiogram.types.Message):
     if await validate_learning_words(
             learning_words=create_bot.user_data[f"learning_words: {message.from_user.id}"], message=message):
         print(f'{message.from_user.username} - {create_bot.user_data[f"learning_words: {message.from_user.id}"]}')
-        await Steps.next()
+    await Steps.next()
 
 
 async def validate_learning_words(learning_words: List[str], message: aiogram.types.Message,
@@ -107,8 +106,7 @@ async def send_words_accepted_message(message: aiogram.types.Message):
                                  f"learning_words_translated: {message.from_user.id}"]),
                          disable_notification=True
                          )
-    # bot.send_random_word.send_random_word(update=update, context=context)
-    await message.answer(text='RAN NUM')
+    await src.send_random_word.send_random_word(message=message)
 
 
 async def translate_learning_words(learning_words: List[str], message: aiogram.types.Message,
@@ -122,7 +120,17 @@ async def translate_learning_words(learning_words: List[str], message: aiogram.t
     return [word.capitalize() for word in create_bot.user_data[f"learning_words_translated: {message.from_user.id}"]]
 
 
+async def stop_translate(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
+    await message.answer(text='Поняла, останавливаюсь...\nНапишите /set если желаете начать заново.',
+                         reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
+                         disable_notification=True)
+    create_bot.user_data[f'user_score: {message.from_user.id}'].reset()
+    await state.finish()
+
+
 def register_get_learning_words_handlers(dp: aiogram.Dispatcher):
-    dp.register_message_handler(asks_for_words, commands=['set'], state=None)
-    dp.register_message_handler(get_learning_words, state=Steps.GET_LEARNING_WORDS_STATE)
-    dp.register_message_handler(send_words_accepted_message, state=Steps.CHECK_ANSWER_CORRECTNESS_STATE)
+    dp.register_message_handler(callback=asks_for_words, commands=['set'])
+    dp.register_message_handler(callback=get_learning_words, content_types=['text'],
+                                state=Steps.get_learning_words_state)
+    dp.register_message_handler(callback=src.user_response_actions.check_answer_correctness, content_types=['text'],
+                                state=src.get_learning_words.Steps.check_answer_correctness_state)
