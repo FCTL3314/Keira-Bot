@@ -49,7 +49,7 @@ async def get_learning_words(message: aiogram.types.Message):
     if await validate_learning_words(
             learning_words=create_bot.user_data[f"learning_words: {message.from_user.id}"], message=message):
         print(f'{message.from_user.username} - {create_bot.user_data[f"learning_words: {message.from_user.id}"]}')
-    await Steps.next()
+        await Steps.next()
 
 
 async def validate_learning_words(learning_words: List[str], message: aiogram.types.Message,
@@ -130,6 +130,8 @@ async def stop_translate(message: aiogram.types.Message, state: aiogram.dispatch
 
 def register_get_learning_words_handlers(dp: aiogram.Dispatcher):
     dp.register_message_handler(callback=asks_for_words, commands=['set'])
+    dp.register_message_handler(callback=stop_translate, commands=['stop'],
+                                state=src.get_learning_words.Steps.check_answer_correctness_state)
     dp.register_message_handler(callback=get_learning_words, content_types=['text'],
                                 state=Steps.get_learning_words_state)
     dp.register_message_handler(callback=src.user_response_actions.check_answer_correctness, content_types=['text'],
