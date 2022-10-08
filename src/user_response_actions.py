@@ -14,7 +14,7 @@ def get_random_translated_word(message: aiogram.types.Message) -> str:
         create_bot.bot_data[f"ran_num: {message.from_user.id}"]]
 
 
-async def check_answer_correctness(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
+async def check_answer_correctness(message: aiogram.types.Message):
     """Checks the translated word entered by the user for correctness"""
     if message.text.lower() == get_random_translated_word(message=message).lower():
         await correct_answer_response(message=message)
