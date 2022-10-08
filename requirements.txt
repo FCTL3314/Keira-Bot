@@ -1,2 +1,2 @@
-python-telegram-bot==13.13
+aiogram==2.22.2
 translators==5.4.2
