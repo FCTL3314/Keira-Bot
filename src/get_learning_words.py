@@ -122,7 +122,7 @@ async def translate_learning_words(learning_words: List[str], message: aiogram.t
     return [word.capitalize() for word in create_bot.user_data[f"learning_words_translated: {message.from_user.id}"]]
 
 
-def register_start_command_handlers(dp: aiogram.Dispatcher):
+def register_get_learning_words_handlers(dp: aiogram.Dispatcher):
     dp.register_message_handler(asks_for_words, commands=['set'], state=None)
     dp.register_message_handler(get_learning_words, state=Steps.GET_LEARNING_WORDS_STATE)
     dp.register_message_handler(send_words_accepted_message, state=Steps.CHECK_ANSWER_CORRECTNESS_STATE)
