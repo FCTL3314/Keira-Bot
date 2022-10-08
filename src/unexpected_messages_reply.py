@@ -2,7 +2,7 @@ import aiogram
 
 
 async def unexpected_message_reply(message: aiogram.types.Message):
-    await message.answer(text='Моей программой не предусмотрена предоставленная тобою смысловая нагрузка.\n'
+    await message.answer(text='Моей программой не предусмотрена предоставленная тобою смысловая нагрузка. '
                               'Пожалуйста, напиши то, что я понимаю.')
 
 
