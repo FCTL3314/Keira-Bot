@@ -25,8 +25,8 @@ async def check_answer_correctness(message: aiogram.types.Message, state: aiogra
 async def correct_answer_response(message: aiogram.types.Message):
     user_score = create_bot.user_data[f'user_score: {message.from_user.id}']
     user_score.increment()
-    if connectors.db_actions.data_base.get_best_score(message=message) < user_score.get_score():
-        connectors.db_actions.data_base.update_best_score(score=user_score.get_score(), message=message)
+    if await connectors.db_actions.data_base.get_best_score(message=message) < user_score.get_score():
+        await connectors.db_actions.data_base.update_best_score(score=user_score.get_score(), message=message)
     await send_correct_answer_message(user_score=user_score, message=message)
     await src.send_random_word.send_random_word(message=message)
 
@@ -50,7 +50,7 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
                                           f'Далее ты можешь совершенствовать свою серию верных ответов, '
                                           f'либо написать /stop что бы перестать переводить.',
                                      disable_notification=True)
-                connectors.db_actions.data_base.add_learned_words(
+                await connectors.db_actions.data_base.add_learned_words(
                     learned_words=create_bot.user_data[f"learning_words: {message.from_user.id}"],
                     message=message)
             case _:
