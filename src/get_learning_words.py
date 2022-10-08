@@ -8,7 +8,7 @@ from typing import List
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
 
-class Steps(StatesGroup):
+class ConversationSteps(StatesGroup):
     get_learning_words_state = State()
     check_answer_correctness_state = State()
 
@@ -28,7 +28,7 @@ async def asks_for_words(message: aiogram.types.Message, number_of_words=configu
         disable_notification=True
     )
     await create_score_instance(message=message)
-    await Steps.get_learning_words_state.set()
+    await ConversationSteps.get_learning_words_state.set()
 
 
 async def create_input_words_example(number_of_words=configurations.config.NUMBER_OF_WORDS) -> str:
@@ -49,7 +49,7 @@ async def get_learning_words(message: aiogram.types.Message):
     if await validate_learning_words(
             learning_words=create_bot.user_data[f"learning_words: {message.from_user.id}"], message=message):
         print(f'{message.from_user.username} - {create_bot.user_data[f"learning_words: {message.from_user.id}"]}')
-        await Steps.next()
+        await ConversationSteps.next()
 
 
 async def validate_learning_words(learning_words: List[str], message: aiogram.types.Message,
@@ -112,12 +112,12 @@ async def send_words_accepted_message(message: aiogram.types.Message):
 async def translate_learning_words(learning_words: List[str], message: aiogram.types.Message,
                                    from_language=configurations.config.FROM_LANGUAGE,
                                    to_language=configurations.config.TO_LANGUAGE) -> List[str]:
-    create_bot.user_data[f"learning_words_translated: {message.from_user.id}"] = [
-        translators.google(query_text=learning_words[word],
-                           from_language=from_language,
-                           to_language=to_language)
+    create_bot.user_data[f"learning_words_translated: {message.from_user.id}"] = [translators.google(
+        query_text=learning_words[word],
+        from_language=from_language,
+        to_language=to_language).capitalize()
         for word in range(len(learning_words))]
-    return [word.capitalize() for word in create_bot.user_data[f"learning_words_translated: {message.from_user.id}"]]
+    return create_bot.user_data[f"learning_words_translated: {message.from_user.id}"]
 
 
 async def stop_translate(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
@@ -131,8 +131,8 @@ async def stop_translate(message: aiogram.types.Message, state: aiogram.dispatch
 def register_get_learning_words_handlers(dp: aiogram.Dispatcher):
     dp.register_message_handler(callback=asks_for_words, commands=['set'])
     dp.register_message_handler(callback=stop_translate, commands=['stop'],
-                                state=src.get_learning_words.Steps.check_answer_correctness_state)
+                                state=src.get_learning_words.ConversationSteps.check_answer_correctness_state)
     dp.register_message_handler(callback=get_learning_words, content_types=['text'],
-                                state=Steps.get_learning_words_state)
+                                state=ConversationSteps.get_learning_words_state)
     dp.register_message_handler(callback=src.user_response_actions.check_answer_correctness, content_types=['text'],
-                                state=src.get_learning_words.Steps.check_answer_correctness_state)
+                                state=src.get_learning_words.ConversationSteps.check_answer_correctness_state)

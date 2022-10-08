@@ -1,5 +1,6 @@
 import aiogram
 import connectors
+import src
 
 
 async def send_achievements_message(message: aiogram.types.Message):
@@ -15,7 +16,7 @@ async def send_achievements_message(message: aiogram.types.Message):
             await message.answer(text=f'Однако твой лучший счёт - {best_score}',
                                  disable_notification=True)
     else:
-        await message.answer(text=f'Библиотека твоих слов:\n{", ".join(learned_words)}.',
+        await message.answer(text=f'Библиотека твоих слов:\n{", ".join(sorted(learned_words))}.',
                              disable_notification=True)
         await message.answer(text=f'Твой лучший счёт - {best_score}',
                              disable_notification=True)
@@ -23,3 +24,5 @@ async def send_achievements_message(message: aiogram.types.Message):
 
 def register_achievements_command_handlers(dp: aiogram.Dispatcher):
     dp.register_message_handler(send_achievements_message, commands=['achievements'])
+    dp.register_message_handler(send_achievements_message, commands=['achievements'],
+                                state=src.get_learning_words.ConversationSteps.check_answer_correctness_state)
