@@ -4,8 +4,8 @@ import src
 
 
 async def send_achievements_message(message: aiogram.types.Message):
-    learned_words = connectors.db_actions.data_base.get_learned_words(message=message)
-    best_score = connectors.db_actions.data_base.get_best_score(message=message)
+    learned_words = await connectors.db_actions.data_base.get_learned_words(message=message)
+    best_score = await connectors.db_actions.data_base.get_best_score(message=message)
     if learned_words is None:
         await message.answer(text=f'Что-то я не могу найти слов в твоей библиотеке...',
                              disable_notification=True)
