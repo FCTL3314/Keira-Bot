@@ -38,7 +38,7 @@ async def create_input_words_example(number_of_words=configurations.config.NUMBE
 
 
 async def create_score_instance(message: aiogram.types.Message):
-    """"Creates a score instance for the specific user based on its id"""
+    """"Creates a score instance for the specific user based on its id."""
     create_bot.user_data[f'user_score: {message.from_user.id}'] = src.user_score.UserScore()
 
 
@@ -48,8 +48,15 @@ async def get_learning_words(message: aiogram.types.Message):
                                                                        message.text.split()]
     if await validate_learning_words(
             learning_words=create_bot.user_data[f"learning_words: {message.from_user.id}"], message=message):
-        print(f'{message.from_user.username} - {create_bot.user_data[f"learning_words: {message.from_user.id}"]}')
+        console_display_user_words(message=message)
         await ConversationSteps.next()
+
+
+def console_display_user_words(message: aiogram.types.Message):
+    if message.from_user.username:
+        print(f'{message.from_user.username} - {create_bot.user_data[f"learning_words: {message.from_user.id}"]}')
+    else:
+        print(f'{message.from_user.first_name} - {create_bot.user_data[f"learning_words: {message.from_user.id}"]}')
 
 
 async def validate_learning_words(learning_words: List[str], message: aiogram.types.Message,
@@ -121,7 +128,7 @@ async def translate_learning_words(learning_words: List[str], message: aiogram.t
 
 
 async def stop_translate(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
-    await message.answer(text='Поняла, останавливаюсь...\nНапишите /set если желаете начать заново.',
+    await message.answer(text='Поняла, останавливаюсь...\nНапиши /set если желаешь начать заново.',
                          reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
                          disable_notification=True)
     create_bot.user_data[f'user_score: {message.from_user.id}'].reset()
