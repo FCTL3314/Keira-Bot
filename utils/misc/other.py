@@ -13,9 +13,9 @@ async def create_words_example(number_of_words=data.config.NUMBER_OF_WORDS) -> s
     return ' '.join(words[:number_of_words])
 
 
-async def create_score_instance(message: aiogram.types.Message):
+async def create_score_instance(user_id):
     """"Creates a score instance for the specific user based on its id."""
-    data.user_data[f'user_score: {message.from_user.id}'] = utils.misc.user_score.UserScore()
+    data.user_data[f'user_score: {user_id}'] = utils.misc.user_score.UserScore()
 
 
 def console_display_user_words(message: aiogram.types.Message):
@@ -32,7 +32,7 @@ async def translate_learning_words(learning_words: List[str], message: aiogram.t
         query_text=learning_words[word],
         from_language=from_language,
         to_language=to_language).capitalize()
-        for word in range(len(learning_words))]
+                                                                            for word in range(len(learning_words))]
     return data.user_data[f"learning_words_translated: {message.from_user.id}"]
 
 
@@ -61,14 +61,10 @@ async def wrong_answer_response(message: aiogram.types.Message):
     await utils.misc.send_message.send_random_word_message(message=message)
 
 
-async def generate_non_previous_number(ran_num, message: aiogram.types.Message,
+async def generate_non_previous_number(previous_number, message: aiogram.types.Message,
                                        number_of_words=data.config.NUMBER_OF_WORDS):
     """Creates a ran_num different from previous_ran_num"""
-    try:
-        previous_ran_num = data.bot_data[f"ran_num: {message.from_user.id}"]
-        while ran_num == previous_ran_num:
-            ran_num = random.randint(0, number_of_words - 1)
-        else:
-            data.bot_data[f"ran_num: {message.from_user.id}"] = ran_num
-    except KeyError:
-        data.bot_data[f"ran_num: {message.from_user.id}"] = ran_num
+    ran_num = random.randint(0, number_of_words - 1)
+    while ran_num == previous_number:
+        ran_num = random.randint(0, number_of_words - 1)
+    return ran_num
