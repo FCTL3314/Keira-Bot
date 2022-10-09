@@ -11,7 +11,7 @@ async def check_translated_word_correctness(message: aiogram.types.Message):
         await utils.misc.other.wrong_answer_response(message=message)
 
 
-def register_check_answer_correctness(dp: aiogram.Dispatcher):
+def register_check_translated_word_correctness_handlers(dp: aiogram.Dispatcher):
     dp.register_message_handler(check_translated_word_correctness, content_types=['text'],
                                 state=states.begin_learn_words_steps.BeginLearnWordsSteps.
                                 check_answer_correctness_state)
