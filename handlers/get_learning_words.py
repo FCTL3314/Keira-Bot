@@ -10,7 +10,7 @@ async def get_learning_words(message: aiogram.types.Message):
     data.user_data[f"learning_words: {message.from_user.id}"] = [word.capitalize() for word in message.text.split()]
     if await filters.validate_words.validate_words(
             learning_words=data.user_data[f"learning_words: {message.from_user.id}"], message=message):
-        utils.misc.other.console_display_user_words(message=message)
+        utils.misc.console_display_user_words(message=message)
         await states.begin_learn_words_steps.BeginLearnWordsSteps.next()
 
 
