@@ -35,8 +35,8 @@ def get_random_translated_word(message: aiogram.types.Message) -> str:
 async def correct_answer_response(message: aiogram.types.Message):
     user_score = data.user_data[f'user_score: {message.from_user.id}']
     user_score.increment()
-    if await utils.sql.db_actions.data_base.get_best_score(message=message) < user_score.get_score():
-        await utils.sql.db_actions.data_base.update_best_score(score=user_score.get_score(), message=message)
+    if utils.sql.db_actions.data_base.get_best_score(message=message) < user_score.get_score():
+        utils.sql.db_actions.data_base.update_best_score(score=user_score.get_score(), message=message)
     await utils.misc.send_message.send_correct_answer_message(user_score=user_score, message=message)
     await utils.misc.send_message.send_random_word_message(message=message)
 
