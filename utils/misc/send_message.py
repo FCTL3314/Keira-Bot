@@ -39,9 +39,13 @@ async def send_words_accepted_message(message: aiogram.types.Message):
 
 
 async def send_random_word_message(message: aiogram.types.Message, number_of_words=data.config.NUMBER_OF_WORDS):
-    """Generates random word and send it"""
-    ran_num = random.randint(0, number_of_words - 1)
-    await utils.misc.other.generate_non_previous_number(ran_num=ran_num, message=message)
+    """Send random generated not previous word message"""
+    try:
+        data.bot_data[f"ran_num: {message.from_user.id}"] = await utils.misc.other.generate_not_previous_number(
+            previous_number=data.bot_data[f"ran_num: {message.from_user.id}"], message=message)
+    except KeyError:
+        data.bot_data[f"ran_num: {message.from_user.id}"] = await utils.misc.other.generate_not_previous_number(
+            previous_number=random.randint(0, number_of_words - 1), message=message)
     learning_words = data.user_data[f"learning_words: {message.from_user.id}"]
     ran_num = data.bot_data[f"ran_num: {message.from_user.id}"]
     await message.answer(text=f'{learning_words[ran_num]}', disable_notification=True)
