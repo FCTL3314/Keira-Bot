@@ -15,10 +15,10 @@ async def send_ask_for_words_message(message: aiogram.types.Message, number_of_w
         text=f'Введи {number_of_words}'
              f' {"изучаемых иностранных слова." if 5 > number_of_words > 1 else "изучаемых иностранных слов."}\n'
              f'Слова необходимо разделить пробелом и записать в одну строку.\n'
-             f'Пример: {await utils.misc.other.create_words_example()}',
+             f'Пример: {await utils.misc.misc.create_words_example()}',
         disable_notification=True
     )
-    await utils.misc.other.create_score_instance(user_id=message.from_user.id)
+    await utils.misc.user_score.create_score_instance(user_id=message.from_user.id)
     await states.begin_learn_words_steps.BeginLearnWordsSteps.get_learning_words_state.set()
 
 
