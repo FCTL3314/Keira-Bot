@@ -1,5 +1,6 @@
 import aiogram
 import handlers
+import utils
 
 from loader import dp
 
@@ -14,7 +15,9 @@ def main():
     handlers.check_translated_word_correctness.register_check_translated_word_correctness_handlers(dp=dp)
     handlers.unexpected_messages_reply.register_unexpected_message_handlers(dp=dp)
 
-    aiogram.executor.start_polling(dispatcher=dp, skip_updates=True)
+    aiogram.executor.start_polling(dispatcher=dp,
+                                   on_startup=utils.sql.db_actions.data_base.create_table_if_not_exists(),
+                                   skip_updates=True)
 
 
 if __name__ == '__main__':
