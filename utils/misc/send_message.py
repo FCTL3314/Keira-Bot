@@ -5,6 +5,24 @@ import keyboards
 import random
 
 
+async def send_words_accepted_message(message: aiogram.types.Message):
+    """Sends 'words accepted message'. And sends a random word."""
+    await message.answer(text='Обработка...', disable_notification=True)
+    learning_words = data.user_data[f"learning_words: {message.from_user.id}"]
+    learning_words_translated = await utils.misc.other.translate_learning_words(
+        message=message,
+        learning_words=data.user_data[f"learning_words: {message.from_user.id}"])
+    accepted_words = ''.join(
+        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words)))
+    await message.answer(text=f'Слова приняты:\n{accepted_words}'
+                              f'Изъявив желание прекратить переводить, напиши /stop.\n'
+                              f'Далее тебе необходимо переводить слова:',
+                         reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
+                             translated_words=data.user_data[f"learning_words_translated: {message.from_user.id}"]),
+                         disable_notification=True)
+    await utils.misc.send_message.send_random_word_message(message=message)
+
+
 async def send_words_not_accepted_message(cause: str, message: aiogram.types.Message):
     match cause:
         case 'InvalidNumberOfWords':
@@ -22,24 +40,6 @@ async def send_words_not_accepted_message(cause: str, message: aiogram.types.Mes
                 text='Ой, что-то пошло не так:\n'
                      'Видимо, в введённых тобою словах имеются пунктуационные символы.',
                 disable_notification=True)
-
-
-async def send_words_accepted_message(message: aiogram.types.Message):
-    """Sends 'words accepted message'. And sends a random word."""
-    await message.answer(text='Обработка...', disable_notification=True)
-    learning_words = data.user_data[f"learning_words: {message.from_user.id}"]
-    learning_words_translated = await utils.misc.other.translate_learning_words(
-        message=message,
-        learning_words=data.user_data[f"learning_words: {message.from_user.id}"])
-    accepted_words = ''.join(
-        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words)))
-    await message.answer(text=f'Слова приняты:\n{accepted_words}'
-                              f'Изъявив желание прекратить переводить, напиши /stop.\n'
-                              f'Далее тебе необходимо переводить слова:',
-                         reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
-                             translated_words=data.user_data[f"learning_words_translated: {message.from_user.id}"]),
-                         disable_notification=True)
-    await utils.misc.send_message.send_random_word_message(message=message)
 
 
 async def send_random_word_message(message: aiogram.types.Message, number_of_words=data.config.NUMBER_OF_WORDS):
@@ -87,8 +87,8 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
 
 async def send_wrong_answer_message(user_score, message: aiogram.types.Message):
     if 5 <= user_score.get_score() < 15:
-        ran_num = random.randint(0, 2)
-        match ran_num:
+        ran_case = random.randint(0, 2)
+        match ran_case:
             case 0:
                 await message.answer(
                     text=f'🔴Неверно.\nПравильный вариант - '
