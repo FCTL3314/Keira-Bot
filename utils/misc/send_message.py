@@ -9,7 +9,7 @@ async def send_words_accepted_message(message: aiogram.types.Message):
     """Sends 'words accepted message'. And sends a random word."""
     await message.answer(text='Обработка...', disable_notification=True)
     learning_words = data.user_data[f"learning_words: {message.from_user.id}"]
-    learning_words_translated = await utils.misc.other.translate_learning_words(
+    learning_words_translated = await utils.misc.translate_learning_words(
         message=message,
         learning_words=data.user_data[f"learning_words: {message.from_user.id}"])
     accepted_words = ''.join(
@@ -45,10 +45,10 @@ async def send_words_not_accepted_message(cause: str, message: aiogram.types.Mes
 async def send_random_word_message(message: aiogram.types.Message, number_of_words=data.config.NUMBER_OF_WORDS):
     """Send random generated not previous word message"""
     try:
-        data.bot_data[f"ran_num: {message.from_user.id}"] = await utils.misc.other.generate_not_previous_number(
+        data.bot_data[f"ran_num: {message.from_user.id}"] = await utils.misc.generate_not_previous_number(
             previous_number=data.bot_data[f"ran_num: {message.from_user.id}"])
     except KeyError:
-        data.bot_data[f"ran_num: {message.from_user.id}"] = await utils.misc.other.generate_not_previous_number(
+        data.bot_data[f"ran_num: {message.from_user.id}"] = await utils.misc.generate_not_previous_number(
             previous_number=random.randint(0, number_of_words - 1))
     learning_words = data.user_data[f"learning_words: {message.from_user.id}"]
     ran_num = data.bot_data[f"ran_num: {message.from_user.id}"]
@@ -92,33 +92,33 @@ async def send_wrong_answer_message(user_score, message: aiogram.types.Message):
             case 0:
                 await message.answer(
                     text=f'🔴Неверно.\nПравильный вариант - '
-                         f'{utils.misc.other.get_random_translated_word(message=message)}.\n'
+                         f'{utils.misc.get_random_translated_word(message=message)}.\n'
                          f'Да, знаю. Ошибки не самое приятное чувство.',
                     disable_notification=True)
             case 1:
                 await message.answer(
                     text=f'🔴Неверно.\nПравильный вариант - '
-                         f'{utils.misc.other.get_random_translated_word(message=message)}.\n'
+                         f'{utils.misc.get_random_translated_word(message=message)}.\n'
                          f'Без ошибок эти слова уж точно не выучить.',
                     disable_notification=True)
             case 2:
                 await message.answer(
                     text=f'🔴Неверно.\nПравильный вариант - '
-                         f'{utils.misc.other.get_random_translated_word(message=message)}.\n'
+                         f'{utils.misc.get_random_translated_word(message=message)}.\n'
                          f'Теперь-то уж ты точно запомнишь это слово.',
                     disable_notification=True)
     elif 15 <= user_score.get_score() < 20:
         await message.answer(
             text=f'🔴Неверно.\nПравильный вариант - '
-                 f'{utils.misc.other.get_random_translated_word(message=message)}.\n'
+                 f'{utils.misc.get_random_translated_word(message=message)}.\n'
                  f'Ничего страшного, ты был почти у цели!',
             disable_notification=True)
     elif user_score.get_score() > 20:
         await message.answer(
             text=f'🔴Неверно.\nПравильный вариант - '
-                 f'{utils.misc.other.get_random_translated_word(message=message)}.\n'
+                 f'{utils.misc.get_random_translated_word(message=message)}.\n'
                  'Ничто в мире не бесконечно, как и твоя серия верных ответов.')
     else:
         await message.answer(
-            text=f'🔴Неверно.\nПравильный вариант - {utils.misc.other.get_random_translated_word(message=message)}.',
+            text=f'🔴Неверно.\nПравильный вариант - {utils.misc.get_random_translated_word(message=message)}.',
             disable_notification=True)
