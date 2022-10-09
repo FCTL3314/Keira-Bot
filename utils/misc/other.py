@@ -61,8 +61,7 @@ async def wrong_answer_response(message: aiogram.types.Message):
     await utils.misc.send_message.send_random_word_message(message=message)
 
 
-async def generate_not_previous_number(previous_number, message: aiogram.types.Message,
-                                       number_of_words=data.config.NUMBER_OF_WORDS):
+async def generate_not_previous_number(previous_number, number_of_words=data.config.NUMBER_OF_WORDS):
     """Creates a ran_num different from previous_ran_num"""
     ran_num = random.randint(0, number_of_words - 1)
     while ran_num == previous_number:
