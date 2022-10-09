@@ -1,40 +1,20 @@
-import telegram
-import telegram.ext
-import bot
+import aiogram
+import handlers
 
-from configurations.config import TOKEN
+from loader import dp
 
 
 def main():
-    print('***START***')
-    updater = telegram.ext.Updater(token=TOKEN, use_context=True)
-    dp = updater.dispatcher
-    dp.add_handler(telegram.ext.CommandHandler(command='start', callback=bot.start_command.start_command))
-    dp.add_handler(telegram.ext.CommandHandler(command='achievements',
-                                               callback=bot.achievements_command.send_achievements_message))
-    dp.add_handler(telegram.ext.ConversationHandler(
-        entry_points=[telegram.ext.CommandHandler('set', bot.get_learning_words.asks_for_words, pass_user_data=True), ],
-        states={
-            bot.get_learning_words.GET_LEARNING_WORDS_STATE: [
-                telegram.ext.MessageHandler(
-                    filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
-                    callback=bot.get_learning_words.get_learning_words,
-                    pass_user_data=True),
-            ],
-            bot.get_learning_words.CHECK_ANSWER_CORRECTNESS_STATE: [
-                telegram.ext.MessageHandler(
-                    filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
-                    callback=bot.user_response_actions.check_answer_correctness,
-                    pass_user_data=True),
-            ],
-        },
-        fallbacks=[telegram.ext.CommandHandler('stop', bot.get_learning_words.stop_conversation)],
-    )
-    )
-    dp.add_handler(telegram.ext.MessageHandler(filters=telegram.ext.Filters.text & (~ telegram.ext.Filters.command),
-                                               callback=bot.unexpected_messages_reply.unexpected_message_reply))
-    updater.start_polling()
-    updater.idle()
+    print('*START*')
+    handlers.start_command.register_start_command_handlers(dp=dp)
+    handlers.set_command.register_set_command_handlers(dp=dp)
+    handlers.get_learning_words.register_get_learning_words_handlers(dp=dp)
+    handlers.stop_command.register_stop_command_handler(dp=dp)
+    handlers.achievements_command.register_achievements_command_handlers(dp=dp)
+    handlers.check_translated_word_correctness.register_check_translated_word_correctness_handlers(dp=dp)
+    handlers.unexpected_messages_reply.register_unexpected_message_handlers(dp=dp)
+
+    aiogram.executor.start_polling(dispatcher=dp, skip_updates=True)
 
 
 if __name__ == '__main__':
