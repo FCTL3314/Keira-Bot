@@ -13,18 +13,6 @@ async def create_words_example(number_of_words=data.config.NUMBER_OF_WORDS) -> s
     return ' '.join(words[:number_of_words])
 
 
-async def create_score_instance(user_id):
-    """"Creates a score instance for the specific user based on its id."""
-    data.user_data[f'user_score: {user_id}'] = utils.misc.user_score.UserScore()
-
-
-def console_display_user_words(message: aiogram.types.Message):
-    if message.from_user.username:
-        print(f'{message.from_user.username} - {data.user_data[f"learning_words: {message.from_user.id}"]}')
-    else:
-        print(f'{message.from_user.first_name} - {data.user_data[f"learning_words: {message.from_user.id}"]}')
-
-
 async def translate_learning_words(learning_words: List[str], message: aiogram.types.Message,
                                    from_language=data.config.FROM_LANGUAGE,
                                    to_language=data.config.TO_LANGUAGE) -> List[str]:
@@ -66,3 +54,10 @@ async def generate_not_previous_number(previous_number, number_of_words=data.con
     while ran_num == previous_number:
         ran_num = random.randint(0, number_of_words - 1)
     return ran_num
+
+
+def console_display_user_words(message: aiogram.types.Message):
+    if message.from_user.username:
+        print(f'{message.from_user.username} - {data.user_data[f"learning_words: {message.from_user.id}"]}')
+    else:
+        print(f'{message.from_user.first_name} - {data.user_data[f"learning_words: {message.from_user.id}"]}')
