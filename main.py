@@ -11,8 +11,8 @@ def main():
     handlers.get_learning_words.register_get_learning_words_handlers(dp=dp)
     handlers.stop_command.register_stop_command_handler(dp=dp)
     handlers.achievements_command.register_achievements_command_handlers(dp=dp)
-    handlers.check_answer_correctness.register_check_answer_correctness(dp=dp)
-    handlers.unexpected_messages_reply.register_unexpected_message_handler(dp=dp)
+    handlers.check_translated_word_correctness.register_check_translated_word_correctness_handlers(dp=dp)
+    handlers.unexpected_messages_reply.register_unexpected_message_handlers(dp=dp)
 
     aiogram.executor.start_polling(dispatcher=dp, skip_updates=True)
 
