@@ -6,18 +6,22 @@ import random
 
 
 async def send_words_not_accepted_message(cause: str, message: aiogram.types.Message):
-    if cause == 'InvalidNumberOfWords':
-        await message.answer(
-            text='Ой, что-то пошло не так:\n'
-                 f'Кол-во твоих слов - {len(data.user_data[f"learning_words: {message.from_user.id}"])}.',
-            disable_notification=True
-        )
-    if cause == 'WordsContainNumbers':
-        await message.answer(
-            text='Ой, что-то пошло не так:\n'
-                 'Видимо, в введённых тобою словах имеются цифры.',
-            disable_notification=True
-        )
+    match cause:
+        case 'InvalidNumberOfWords':
+            await message.answer(
+                text='Ой, что-то пошло не так:\n'
+                     f'Кол-во твоих слов - {len(data.user_data[f"learning_words: {message.from_user.id}"])}.',
+                disable_notification=True)
+        case 'WordsContainNumbers':
+            await message.answer(
+                text='Ой, что-то пошло не так:\n'
+                     'Видимо, в введённых тобою словах имеются цифры.',
+                disable_notification=True)
+        case 'WordsContainPunctuation':
+            await message.answer(
+                text='Ой, что-то пошло не так:\n'
+                     'Видимо, в введённых тобою словах имеются пунктуационные символы.',
+                disable_notification=True)
 
 
 async def send_words_accepted_message(message: aiogram.types.Message):
