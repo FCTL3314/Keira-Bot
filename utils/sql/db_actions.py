@@ -56,4 +56,4 @@ class DataBase:
             return self.__cur.fetchone()[0]
 
 
-data_base = DataBase(route=r'D:\Start Menu\Programming\Keira-Bot\connectors\data\data.db')
+data_base = DataBase(route=r'D:\Start Menu\Programming\Keira-Bot\utils\sql\data\data.db')

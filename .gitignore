@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Data
-!/connectors/data/data.db
+# Database file
+!/utils/sql/data/data.db

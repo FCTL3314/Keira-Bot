@@ -1,6 +1,6 @@
 import aiogram
 
-from create_bot import bot
+from loader import bot
 
 
 async def start_command(message: aiogram.types.Message):
