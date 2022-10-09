@@ -31,8 +31,7 @@ async def translate_learning_words(learning_words: List[str], message: aiogram.t
     data.user_data[f"learning_words_translated: {message.from_user.id}"] = [translators.google(
         query_text=learning_words[word],
         from_language=from_language,
-        to_language=to_language).capitalize()
-                                                                            for word in range(len(learning_words))]
+        to_language=to_language).capitalize() for word in range(len(learning_words))]
     return data.user_data[f"learning_words_translated: {message.from_user.id}"]
 
 
