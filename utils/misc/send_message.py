@@ -18,7 +18,7 @@ async def send_words_accepted_message(message: aiogram.types.Message):
                               f'Изъявив желание прекратить переводить, напиши /stop.\n'
                               f'Далее тебе необходимо переводить слова:',
                          reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
-                             translated_words=data.user_data[f"learning_words_translated: {message.from_user.id}"]),
+                             text=data.user_data[f"learning_words_translated: {message.from_user.id}"]),
                          disable_notification=True)
     await utils.misc.send_message.send_random_word_message(message=message)
 
@@ -74,9 +74,9 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
                                           f'Далее ты можешь совершенствовать свою серию верных ответов, '
                                           f'либо написать /stop что бы перестать переводить.',
                                      disable_notification=True)
-                utils.sql.db_actions.data_base.add_learned_words(
-                    learned_words=data.user_data[f"learning_words: {message.from_user.id}"],
-                    message=message)
+                with utils.sql.database as db:
+                    db.add_learned_words(learned_words=data.user_data[f"learning_words: {message.from_user.id}"],
+                                         user_id=message.from_user.id)
             case _:
                 await message.answer(text=f'🟢Верно!', disable_notification=True)
     elif user_score.get_score() > 20:
