@@ -1,1 +1,4 @@
-import utils.sql.db_actions
+import utils.sql.sql_database
+
+
+database = sql_database.Database()
