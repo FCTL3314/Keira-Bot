@@ -19,8 +19,8 @@ async def send_ask_for_words_message(message: aiogram.types.Message, number_of_w
         disable_notification=True
     )
     await utils.misc.user_score.create_score_instance(user_id=message.from_user.id)
-    await states.begin_learn_words_steps.BeginLearnWordsSteps.get_learning_words_state.set()
+    await states.learn_words_steps.LearnWordsSteps.get_learning_words_state.set()
 
 
 def register_set_command_handlers(dp: aiogram.Dispatcher):
-    dp.register_message_handler(send_ask_for_words_message, commands=['set'])
+    dp.register_message_handler(callback=send_ask_for_words_message, commands=['set'])

@@ -11,9 +11,9 @@ async def get_learning_words(message: aiogram.types.Message):
     if await filters.validate_words.validate_words(
             learning_words=data.user_data[f"learning_words: {message.from_user.id}"], message=message):
         utils.misc.console_display_user_words(message=message)
-        await states.begin_learn_words_steps.BeginLearnWordsSteps.next()
+        await states.learn_words_steps.LearnWordsSteps.next()
 
 
 def register_get_learning_words_handlers(dp: aiogram.Dispatcher):
-    dp.register_message_handler(get_learning_words, content_types=['text'],
-                                state=states.begin_learn_words_steps.BeginLearnWordsSteps.get_learning_words_state)
+    dp.register_message_handler(callback=get_learning_words, content_types=['text'],
+                                state=states.learn_words_steps.LearnWordsSteps.get_learning_words_state)

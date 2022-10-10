@@ -8,4 +8,4 @@ async def unexpected_message_reply(message: aiogram.types.Message):
 
 
 def register_unexpected_message_handlers(dp: aiogram.Dispatcher):
-    dp.register_message_handler(unexpected_message_reply)
+    dp.register_message_handler(callback=unexpected_message_reply)

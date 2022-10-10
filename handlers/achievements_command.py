@@ -4,8 +4,10 @@ import states
 
 
 async def send_achievements_message(message: aiogram.types.Message):
-    learned_words = utils.sql.db_actions.data_base.get_learned_words(message=message)
-    best_score = utils.sql.db_actions.data_base.get_best_score(message=message)
+    with utils.sql.database as db:
+        learned_words = db.get_learned_words(user_id=message.from_user.id)
+    with utils.sql.database as db:
+        best_score = db.get_best_score(user_id=message.from_user.id)
     if learned_words is None:
         await message.answer(text=f'Что-то я не могу найти слов в твоей библиотеке...',
                              disable_notification=True)
@@ -23,7 +25,6 @@ async def send_achievements_message(message: aiogram.types.Message):
 
 
 def register_achievements_command_handlers(dp: aiogram.Dispatcher):
-    dp.register_message_handler(send_achievements_message, commands=['achievements'])
-    dp.register_message_handler(send_achievements_message, commands=['achievements'],
-                                state=states.begin_learn_words_steps.BeginLearnWordsSteps.
-                                check_answer_correctness_state)
+    dp.register_message_handler(callback=send_achievements_message, commands=['achievements'])
+    dp.register_message_handler(callback=send_achievements_message, commands=['achievements'],
+                                state=states.learn_words_steps.LearnWordsSteps.check_answer_correctness_state)
