@@ -6,20 +6,30 @@ from typing import List
 from string import punctuation
 
 
-async def validate_words(learning_words: List[str], message: aiogram.types.Message,
+async def validate_words(learning_words: List[str],
+                         message: aiogram.types.Message,
+                         state: aiogram.dispatcher.FSMContext,
                          number_of_words=data.config.NUMBER_OF_WORDS) -> bool:
     """
     Validate learning_words for correctness.
     :return: number 1 for conversation handler state.
     """
     if not await check_for_punctuation(learning_words=''.join(learning_words)):
-        await utils.misc.send_message.send_words_not_accepted_message(message=message, cause='WordsContainPunctuation')
+        await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
+                                                                      cause='WordsContainPunctuation',
+                                                                      message=message)
     elif not await check_for_numbers(learning_words=''.join(learning_words)):
-        await utils.misc.send_message.send_words_not_accepted_message(message=message, cause='WordsContainNumbers')
+        await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
+                                                                      cause='WordsContainNumbers',
+                                                                      message=message)
     elif not len(learning_words) == number_of_words:
-        await utils.misc.send_message.send_words_not_accepted_message(message=message, cause='InvalidNumberOfWords')
+        await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
+                                                                      cause='InvalidNumberOfWords',
+                                                                      message=message)
     else:
-        await utils.misc.send_message.send_words_accepted_message(message=message)
+        await utils.misc.send_message.send_words_accepted_message(learning_words=learning_words,
+                                                                  message=message,
+                                                                  state=state)
         return True
 
 
