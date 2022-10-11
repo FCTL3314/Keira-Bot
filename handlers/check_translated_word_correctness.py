@@ -7,8 +7,8 @@ async def check_translated_word_correctness(message: aiogram.types.Message, stat
     """Checks the translated word entered by the user for correctness"""
     async with state.proxy() as user_data:
         ran_num = user_data['ran_num']
-    user_data = await state.get_data()
-    if message.text.lower() == user_data.get('learning_words_translated')[ran_num].lower():
+        learning_words_translated = user_data['learning_words_translated']
+    if message.text.lower() == learning_words_translated[ran_num].lower():
         await utils.misc.correct_answer_response(message=message, state=state)
     else:
         await utils.misc.wrong_answer_response(message=message, state=state)

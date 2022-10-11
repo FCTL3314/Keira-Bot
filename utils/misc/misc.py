@@ -17,20 +17,21 @@ async def translate_learning_words(learning_words: List[str],
                                    state: aiogram.dispatcher.FSMContext,
                                    from_language=data.config.FROM_LANGUAGE,
                                    to_language=data.config.TO_LANGUAGE) -> List[str]:
-    await state.update_data(learning_words_translated=[translators.google(
-        query_text=learning_words[word],
-        from_language=from_language,
-        to_language=to_language).capitalize() for word in range(len(learning_words))])
-    user_data = await state.get_data()
-    return user_data.get('learning_words_translated')
+    async with state.proxy() as user_data:
+        user_data['learning_words_translated'] = [translators.google(
+            query_text=learning_words[word],
+            from_language=from_language,
+            to_language=to_language).capitalize() for word in range(len(learning_words))]
+        learning_words_translated = user_data['learning_words_translated']
+    return learning_words_translated
 
 
 async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> str:
     """Gets the predetermined random translated word"""
     async with state.proxy() as user_data:
         ran_num = user_data['ran_num']
-    user_data = await state.get_data()
-    return user_data.get('learning_words_translated')[ran_num]
+        learning_words_translated = user_data['learning_words_translated']
+    return user_data.get(learning_words_translated)[ran_num]
 
 
 async def correct_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
