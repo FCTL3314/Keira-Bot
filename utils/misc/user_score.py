@@ -1,4 +1,4 @@
-import data
+import aiogram
 import utils
 
 
@@ -19,6 +19,7 @@ class UserScore:
         self._score = 0
 
 
-async def create_score_instance(user_id):
+async def create_score_instance(state: aiogram.dispatcher.FSMContext):
     """"Creates a score instance for the specific user based on its id."""
-    data.user_data[f'user_score: {user_id}'] = utils.misc.user_score.UserScore()
+    async with state.proxy() as user_data:
+        user_data['user_score'] = utils.misc.user_score.UserScore()

@@ -1,5 +1,4 @@
 import aiogram
-import data
 import states
 
 
@@ -7,7 +6,9 @@ async def send_stop_translating_message(message: aiogram.types.Message, state: a
     await message.answer(text='Поняла, останавливаюсь...\nНапиши /set если желаешь начать заново.',
                          reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
                          disable_notification=True)
-    data.user_data[f'user_score: {message.from_user.id}'].reset()
+    async with state.proxy() as user_data:
+        user_score = user_data['user_score']
+    user_score.reset()
     await state.finish()
 
 
