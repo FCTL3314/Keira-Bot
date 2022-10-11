@@ -26,18 +26,17 @@ async def translate_learning_words(learning_words: List[str],
 
 
 async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> str:
-    """
-    Gets the predetermined random translated word, using [f"ran_num: {update.message.from_user.id}"] as a
-    specific user keyword.
-    """
+    """Gets the predetermined random translated word"""
+    async with state.proxy() as user_data:
+        ran_num = user_data['ran_num']
     user_data = await state.get_data()
-    bot_data = await state.get_data()
-    return user_data.get('learning_words_translated')[bot_data.get('ran_num')]
+    return user_data.get('learning_words_translated')[ran_num]
 
 
 async def correct_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
-    user_score = data.user_data[f'user_score: {message.from_user.id}']
-    user_score.increment()
+    async with state.proxy() as user_data:
+        user_score = user_data['user_score']
+        user_data['user_score'].increment()
     with utils.sql.database as db:
         if db.get_best_score(user_id=message.from_user.id) < user_score.get_score():
             db.update_best_score(score=user_score.get_score(), user_id=message.from_user.id)
@@ -46,7 +45,8 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
 
 
 async def wrong_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
-    user_score = data.user_data[f'user_score: {message.from_user.id}']
+    async with state.proxy() as user_data:
+        user_score = user_data['user_score']
     await utils.misc.send_message.send_wrong_answer_message(user_score=user_score, message=message, state=state)
     user_score.reset()
     await utils.misc.send_message.send_random_word_message(message=message, state=state)

@@ -40,18 +40,17 @@ async def send_words_not_accepted_message(learning_words, cause: str, message: a
                 disable_notification=True)
 
 
-async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
+async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
+                                   number_of_words=data.config.NUMBER_OF_WORDS):
     """Send random generated not previous word message"""
-    bot_data = await state.get_data()
-    if bot_data.get('ran_num') is None:
-        await state.update_data(ran_num=await utils.misc.generate_not_previous_number(
-            previous_number=-1))
-    else:
-        await state.update_data(ran_num=await utils.misc.generate_not_previous_number(
-            previous_number=bot_data.get('ran_num')))
-    bot_data = await state.get_data()
-    learning_words = bot_data.get('learning_words')
-    ran_num = bot_data.get('ran_num')
+    async with state.proxy() as user_data:
+        try:
+            user_data['ran_num'] = await utils.misc.generate_not_previous_number(previous_number=user_data['ran_num'])
+        except KeyError:
+            user_data['ran_num'] = random.randint(0, number_of_words - 1)
+        bot_data = await state.get_data()
+        learning_words = bot_data.get('learning_words')
+        ran_num = user_data['ran_num']
     await message.answer(text=f'{learning_words[ran_num]}', disable_notification=True)
 
 

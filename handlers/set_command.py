@@ -4,7 +4,8 @@ import utils
 import states
 
 
-async def send_ask_for_words_message(message: aiogram.types.Message, number_of_words=data.config.NUMBER_OF_WORDS):
+async def send_ask_for_words_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
+                                     number_of_words=data.config.NUMBER_OF_WORDS):
     """
     Entry-point of the ConversationHandler
     Asks the User to enter a words.
@@ -18,7 +19,7 @@ async def send_ask_for_words_message(message: aiogram.types.Message, number_of_w
              f'Пример: {await utils.misc.misc.create_words_example()}',
         disable_notification=True
     )
-    await utils.misc.user_score.create_score_instance(user_id=message.from_user.id)
+    await utils.misc.user_score.create_score_instance(state=state)
     await states.learn_words_steps.LearnWordsSteps.get_learning_words_state.set()
 
 
