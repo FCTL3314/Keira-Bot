@@ -73,15 +73,11 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
                                           f'Далее ты можешь совершенствовать свою серию верных ответов, '
                                           f'либо написать /stop что бы перестать переводить.',
                                      disable_notification=True)
-                with utils.sql.database as db:
-                    db.add_learned_words(learned_words=data.user_data[f"learning_words: {message.from_user.id}"],
-                                         user_id=message.from_user.id)
             case _:
                 await message.answer(text=f'🟢Верно!', disable_notification=True)
     elif user_score.get_score() > 20:
         await message.answer(
-            text=f'🟢Серия верных ответов: {data.user_data[f"user_score: {message.from_user.id}"].get_score()}!',
-            disable_notification=True)
+            text=f'🟢Серия верных ответов: {user_score.get_score()}!', disable_notification=True)
 
 
 async def send_wrong_answer_message(user_score, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
