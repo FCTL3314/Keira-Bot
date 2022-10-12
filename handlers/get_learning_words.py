@@ -9,7 +9,7 @@ async def get_learning_words(message: aiogram.types.Message, state: aiogram.disp
     async with state.proxy() as user_data:
         user_data['learning_words'] = [word.capitalize() for word in message.text.split()]
         learning_words = user_data['learning_words']
-    if await filters.validate_words.validate_words(learning_words=learning_words, message=message):
+    if await filters.validate_words(learning_words=learning_words, message=message):
         utils.misc.console_display_user_words(username=message.from_user.username,
                                               first_name=message.from_user.first_name,
                                               learning_words=learning_words)
