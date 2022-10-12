@@ -1,6 +1,6 @@
 import aiogram
 import data
-import utils.misc
+import utils
 import translators
 import random
 
@@ -52,8 +52,8 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
 async def wrong_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
     async with state.proxy() as user_data:
         user_score = user_data['user_score']
-    await utils.misc.send_message.send_wrong_answer_message(user_score=user_score, message=message, state=state)
-    user_score.reset()
+        await utils.misc.send_message.send_wrong_answer_message(user_score=user_score, message=message, state=state)
+        user_score.reset()
     await utils.misc.send_message.send_random_word_message(message=message, state=state)
 
 
