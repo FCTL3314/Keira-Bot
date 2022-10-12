@@ -5,9 +5,9 @@ from loader import bot
 
 async def start_command(message: aiogram.types.Message):
     """Send a message that informs the user"""
-    keira = await bot.get_me()
+    get_bot = await bot.get_me()
     await message.answer(
-        text=f'Привет {message.from_user.first_name}! Меня зовут {keira.first_name}.',
+        text=f'Привет {message.from_user.first_name}! Меня зовут {get_bot.first_name}.',
         disable_notification=True
     )
     await message.answer(text=f'Я буду помогать тебе изучать иностранные слова.\n'
