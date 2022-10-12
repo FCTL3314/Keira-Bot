@@ -7,7 +7,6 @@ import random
 
 async def send_words_accepted_message(learning_words,  learning_words_translated, message: aiogram.types.Message,
                                       number_of_words=data.config.NUMBER_OF_WORDS):
-    """Sends 'words accepted message'. And sends a random word."""
     accepted_words = ''.join(
         f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
     await message.answer(text=f'Слова приняты:\n{accepted_words}'
@@ -40,12 +39,11 @@ async def send_random_word_message(message: aiogram.types.Message, state: aiogra
                                    number_of_words=data.config.NUMBER_OF_WORDS):
     """Send random generated not previous word message"""
     async with state.proxy() as user_data:
-        try:
+        if 'ran_num' in user_data:
             user_data['ran_num'] = await utils.misc.generate_not_previous_number(previous_number=user_data['ran_num'])
-        except KeyError:
+        else:
             user_data['ran_num'] = random.randint(0, number_of_words - 1)
-        bot_data = await state.get_data()
-        learning_words = bot_data.get('learning_words')
+        learning_words = user_data['learning_words']
         ran_num = user_data['ran_num']
     await message.answer(text=f'{learning_words[ran_num]}', disable_notification=True)
 
