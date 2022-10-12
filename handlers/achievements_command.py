@@ -6,7 +6,6 @@ import states
 async def send_achievements_message(message: aiogram.types.Message):
     with utils.sql.database as db:
         learned_words = db.get_learned_words(user_id=message.from_user.id)
-    with utils.sql.database as db:
         best_score = db.get_best_score(user_id=message.from_user.id)
     if learned_words is None:
         await message.answer(text=f'Что-то я не могу найти слов в твоей библиотеке...',
