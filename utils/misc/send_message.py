@@ -74,6 +74,10 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
             text=f'🟢Серия верных ответов: {user_score.get_score()}!', disable_notification=True)
 
 
+async def send_score_record_message(message: aiogram.types.Message):
+    await message.answer(text='🏆Новый рекорд!')
+
+
 async def send_wrong_answer_message(user_score, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
     wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
     if 5 <= user_score.get_score() < 15:
