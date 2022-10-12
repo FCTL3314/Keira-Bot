@@ -13,9 +13,13 @@ async def get_learning_words(message: aiogram.types.Message, state: aiogram.disp
         utils.misc.console_display_user_words(username=message.from_user.username,
                                               first_name=message.from_user.first_name,
                                               learning_words=learning_words)
+        await message.answer(text='Обработка...', disable_notification=True)
+        learning_words_translated = await utils.misc.translate_learning_words(learning_words=learning_words,
+                                                                              state=state)
         await utils.misc.send_message.send_words_accepted_message(learning_words=learning_words,
-                                                                  message=message,
-                                                                  state=state)
+                                                                  learning_words_translated=learning_words_translated,
+                                                                  message=message)
+        await utils.misc.send_message.send_random_word_message(message=message, state=state)
         await states.learn_words_steps.LearnWordsSteps.next()
 
 
