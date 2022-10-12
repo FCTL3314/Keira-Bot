@@ -6,9 +6,7 @@ from typing import List
 from string import punctuation
 
 
-async def validate_words(learning_words: List[str],
-                         message: aiogram.types.Message,
-                         state: aiogram.dispatcher.FSMContext,
+async def validate_words(learning_words: List[str], message: aiogram.types.Message,
                          number_of_words=data.config.NUMBER_OF_WORDS) -> bool:
     """
     Validate learning_words for correctness.
@@ -27,9 +25,6 @@ async def validate_words(learning_words: List[str],
                                                                       cause='InvalidNumberOfWords',
                                                                       message=message)
     else:
-        await utils.misc.send_message.send_words_accepted_message(learning_words=learning_words,
-                                                                  message=message,
-                                                                  state=state)
         return True
 
 
