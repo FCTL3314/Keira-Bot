@@ -5,18 +5,11 @@ from typing import List
 
 class Database:
     """The class is designed for the fact that its methods will be called with a context manager."""
-    __LOCATION = r'D:\Start Menu\Programming\Keira-Bot\utils\sql\data\data.db'
-
-    def __init__(self, specific_location=None):
-        """
-        Attributes __conn and __cur are not initialized immediately in __init__ because it will create an instant
-        connection right after the class is instantiated. To correctly determine these attributes, there is a connect
-        function, which is called in the __enter__ method.
-        """
-        self.__conn = None
-        self.__cur = None
-        self.__specific_location = specific_location
-        self.connected = False
+    def __init__(self, location=r'D:\Start Menu\Programming\Keira-Bot\utils\sql\data\data.db'):
+        self.__conn = sqlite3.connect(location, check_same_thread=False)
+        self.__cur = self.__conn.cursor()
+        self.connected = True
+        self.__location = location
 
     def __enter__(self):
         if not self.connected:
@@ -24,19 +17,17 @@ class Database:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.__cur.close()
-        if isinstance(exc_val, Exception):  # Наследуется ли exc_val (значение исключения(если оно будет)) от Exception
-            self.__conn.rollback()
-        else:
-            self.__conn.commit()
-        self.__conn.close()
-        self.connected = False
+        if self.connected is True:
+            self.__cur.close()
+            if isinstance(exc_val, Exception):
+                self.__conn.rollback()
+            else:
+                self.__conn.commit()
+            self.__conn.close()
+            self.connected = False
 
     def connect(self):
-        if self.__specific_location is not None:
-            self.__conn = sqlite3.connect(self.__specific_location, check_same_thread=False)
-        else:
-            self.__conn = self.__conn = sqlite3.connect(self.__LOCATION, check_same_thread=False)
+        self.__conn = sqlite3.connect(self.__location, check_same_thread=False)
         self.__cur = self.__conn.cursor()
         self.connected = True
 
@@ -45,7 +36,7 @@ class Database:
                            "'learned_words' TEXT, 'best_score'	INTEGER DEFAULT 0, PRIMARY KEY('user_id'))")
 
     def find_user_id_record(self, user_id: int) -> bool:
-        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{user_id}"')
+        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{user_id}"').fetchone()
         return bool(self.__cur.fetchone())
 
     def create_user_record(self, user_id: int):
