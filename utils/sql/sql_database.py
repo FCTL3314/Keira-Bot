@@ -36,7 +36,7 @@ class Database:
                            "'learned_words' TEXT, 'best_score'	INTEGER DEFAULT 0, PRIMARY KEY('user_id'))")
 
     def find_user_id_record(self, user_id: int) -> bool:
-        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{user_id}"').fetchone()
+        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{user_id}"')
         return bool(self.__cur.fetchone())
 
     def create_user_record(self, user_id: int):
