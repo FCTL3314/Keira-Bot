@@ -5,20 +5,16 @@ import keyboards
 import random
 
 
-async def send_words_accepted_message(learning_words, message: aiogram.types.Message,
-                                      state: aiogram.dispatcher.FSMContext):
+async def send_words_accepted_message(learning_words,  learning_words_translated, message: aiogram.types.Message,
+                                      number_of_words=data.config.NUMBER_OF_WORDS):
     """Sends 'words accepted message'. And sends a random word."""
-    await message.answer(text='Обработка...', disable_notification=True)
-    learning_words_translated = await utils.misc.translate_learning_words(learning_words=learning_words, state=state)
     accepted_words = ''.join(
-        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words)))
+        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
     await message.answer(text=f'Слова приняты:\n{accepted_words}'
                               f'Изъявив желание прекратить переводить, напиши /stop.\n'
                               f'Далее тебе необходимо переводить слова:',
                          reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
-                             text=learning_words_translated),
-                         disable_notification=True)
-    await utils.misc.send_message.send_random_word_message(message=message, state=state)
+                             text=learning_words_translated), disable_notification=True)
 
 
 async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message):
@@ -115,5 +111,5 @@ async def send_wrong_answer_message(user_score, message: aiogram.types.Message, 
                  'Ничто в мире не бесконечно, как и твоя серия верных ответов.')
     else:
         await message.answer(
-            text=f'🔴Неверно.\nПравильный вариант - {utils.misc.get_random_translated_word(state=state)}.',
+            text=f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.',
             disable_notification=True)
