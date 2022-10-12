@@ -5,20 +5,15 @@ import keyboards
 import random
 
 
-async def send_words_accepted_message(learning_words, message: aiogram.types.Message,
-                                      state: aiogram.dispatcher.FSMContext):
-    """Sends 'words accepted message'. And sends a random word."""
-    await message.answer(text='Обработка...', disable_notification=True)
-    learning_words_translated = await utils.misc.translate_learning_words(learning_words=learning_words, state=state)
+async def send_words_accepted_message(learning_words,  learning_words_translated, message: aiogram.types.Message,
+                                      number_of_words=data.config.NUMBER_OF_WORDS):
     accepted_words = ''.join(
-        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(len(learning_words)))
+        f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
     await message.answer(text=f'Слова приняты:\n{accepted_words}'
                               f'Изъявив желание прекратить переводить, напиши /stop.\n'
                               f'Далее тебе необходимо переводить слова:',
                          reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
-                             text=learning_words_translated),
-                         disable_notification=True)
-    await utils.misc.send_message.send_random_word_message(message=message, state=state)
+                             text=learning_words_translated), disable_notification=True)
 
 
 async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message):
@@ -44,12 +39,11 @@ async def send_random_word_message(message: aiogram.types.Message, state: aiogra
                                    number_of_words=data.config.NUMBER_OF_WORDS):
     """Send random generated not previous word message"""
     async with state.proxy() as user_data:
-        try:
+        if 'ran_num' in user_data:
             user_data['ran_num'] = await utils.misc.generate_not_previous_number(previous_number=user_data['ran_num'])
-        except KeyError:
+        else:
             user_data['ran_num'] = random.randint(0, number_of_words - 1)
-        bot_data = await state.get_data()
-        learning_words = bot_data.get('learning_words')
+        learning_words = user_data['learning_words']
         ran_num = user_data['ran_num']
     await message.answer(text=f'{learning_words[ran_num]}', disable_notification=True)
 
@@ -67,7 +61,7 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
                 await message.answer(text=f'🟢Верно!\nЕщё чуть-чуть и ты их выучишь! Осталось совсем ничего!',
                                      disable_notification=True)
             case 20:
-                await message.answer(text=f'✅Поздравляю! Слова выучены!\n'
+                await message.answer(text=f'✅Слова выучены и сохранены!\n'
                                           f'Написав команду /achievements, ты увидишь библиотеку выученных слов, '
                                           f'а так же свой лучший счёт.\n'
                                           f'Далее ты можешь совершенствовать свою серию верных ответов, '
@@ -81,39 +75,27 @@ async def send_correct_answer_message(user_score, message: aiogram.types.Message
 
 
 async def send_wrong_answer_message(user_score, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
+    wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
     if 5 <= user_score.get_score() < 15:
         ran_case = random.randint(0, 2)
         match ran_case:
             case 0:
                 await message.answer(
-                    text=f'🔴Неверно.\nПравильный вариант - '
-                         f'{await utils.misc.get_random_translated_word(state=state)}.\n'
-                         f'Да, знаю. Ошибки не самое приятное чувство.',
-                    disable_notification=True)
+                    text=f'{wrong_answer_text}Да, знаю. Ошибки не самое приятное чувство.', disable_notification=True)
             case 1:
                 await message.answer(
-                    text=f'🔴Неверно.\nПравильный вариант - '
-                         f'{await utils.misc.get_random_translated_word(state=state)}.\n'
-                         f'Без ошибок эти слова уж точно не выучить.',
-                    disable_notification=True)
+                    text=f'{wrong_answer_text}Без ошибок эти слова уж точно не выучить.', disable_notification=True)
             case 2:
                 await message.answer(
-                    text=f'🔴Неверно.\nПравильный вариант - '
-                         f'{await utils.misc.get_random_translated_word(state=state)}.\n'
-                         f'Теперь-то уж ты точно запомнишь это слово.',
-                    disable_notification=True)
+                    text=f'{wrong_answer_text}Теперь-то уж ты точно запомнишь это слово.', disable_notification=True)
     elif 15 <= user_score.get_score() < 20:
         await message.answer(
-            text=f'🔴Неверно.\nПравильный вариант - '
-                 f'{await utils.misc.get_random_translated_word(state=state)}.\n'
-                 f'Ничего страшного, ты был почти у цели!',
+            text=f'{wrong_answer_text}Ничего страшного, ты был почти у цели!',
             disable_notification=True)
     elif user_score.get_score() > 20:
         await message.answer(
-            text=f'🔴Неверно.\nПравильный вариант - '
-                 f'{await utils.misc.get_random_translated_word(state=state)}.\n'
-                 'Ничто в мире не бесконечно, как и твоя серия верных ответов.')
+            text=f'{wrong_answer_text}Ничто в мире не бесконечно, как и твоя серия верных ответов.')
     else:
         await message.answer(
-            text=f'🔴Неверно.\nПравильный вариант - {utils.misc.get_random_translated_word(state=state)}.',
+            text=f'{wrong_answer_text}',
             disable_notification=True)
