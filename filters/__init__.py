@@ -1,1 +1,2 @@
-import filters.validate_words
+from filters.validate_words import validate_words
+from filters.is_record_message_send import is_record_message_send
