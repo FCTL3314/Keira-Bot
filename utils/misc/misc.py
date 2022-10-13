@@ -45,7 +45,7 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
             db.update_best_score(score=user_score.get_score(), user_id=message.from_user.id)
             if not await filters.is_record_message_send(user_score=user_score, state=state):
                 await utils.misc.send_message.send_score_record_message(message=message)
-        if user_score.get_score() == 20:
+        if user_score.get_score() == data.config.WORDS_LEARNING_DIFFICULTY:
             db.add_learned_words(learned_words=learning_words,  user_id=message.from_user.id)
     await utils.misc.send_message.send_correct_answer_message(user_score=user_score, message=message)
     await utils.misc.send_message.send_random_word_message(message=message, state=state)
