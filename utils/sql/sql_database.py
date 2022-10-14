@@ -33,44 +33,42 @@ class Database:
 
     def create_table(self):
         self.__cur.execute("CREATE TABLE IF NOT EXISTS 'user_data' ('user_id' INTEGER UNIQUE, "
-                           "'learned_words' TEXT, 'best_score'	INTEGER DEFAULT 0, PRIMARY KEY('user_id'))")
+                           "'learned_words' TEXT, 'medals'	INTEGER, PRIMARY KEY('user_id'))")
 
     def find_user_id_record(self, user_id: int) -> bool:
         self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{user_id}"')
         return bool(self.__cur.fetchone())
 
-    def create_user_record(self, user_id: int):
+    def create_user_id_record(self, user_id: int):
         self.__cur.execute(f'INSERT INTO user_data (user_id) VALUES ({user_id})')
 
     def add_learned_words(self, learned_words: List[str], user_id: int):
         if not self.find_user_id_record(user_id=user_id):
-            self.create_user_record(user_id=user_id)
-        self.__cur.execute(f'SELECT learned_words FROM user_data WHERE user_id == {user_id}')
-        if self.__cur.fetchone()[0] is None:
+            self.create_user_id_record(user_id=user_id)
+        if self.get_learned_words(user_id=user_id) is None:
             self.__cur.execute(f'UPDATE user_data SET learned_words = '
-                               f'"{" ".join(learned_words)}" WHERE user_id = {user_id}')
-        self.__cur.execute(f'SELECT learned_words FROM user_data WHERE user_id == {user_id}')
-        learned_words_set = set(self.__cur.fetchone()[0].split() + learned_words)
-        self.__cur.execute(f'UPDATE user_data SET learned_words = '
-                           f'"{" ".join(learned_words_set)}" WHERE user_id = {user_id}')
+                               f'"{" ".join(set(learned_words))}" WHERE user_id = {user_id}')
+        else:
+            learned_words_set = set(self.get_learned_words(user_id=user_id) + learned_words)
+            self.__cur.execute(f'UPDATE user_data SET learned_words = '
+                               f'"{" ".join(learned_words_set)}" WHERE user_id = {user_id}')
 
-    def update_best_score(self, score: int, user_id: int):
+    def add_medal(self, medal, user_id: int):
         if not self.find_user_id_record(user_id=user_id):
-            self.create_user_record(user_id=user_id)
-        self.__cur.execute(
-            f'UPDATE user_data SET best_score = {score} WHERE user_id == {user_id}')
+            self.create_user_id_record(user_id=user_id)
+        self.__cur.execute(f'UPDATE user_data SET medals = {medal} WHERE user_id == {user_id}')
 
     def get_learned_words(self, user_id: int) -> List[str]:
         if not self.find_user_id_record(user_id=user_id):
-            self.create_user_record(user_id=user_id)
+            self.create_user_id_record(user_id=user_id)
         self.__cur.execute(f'SELECT learned_words FROM user_data WHERE user_id == {user_id}')
         if self.__cur.fetchone()[0] is not None:
             self.__cur.execute(
                 f'SELECT learned_words FROM user_data WHERE user_id == {user_id}')
             return self.__cur.fetchone()[0].split()
 
-    def get_best_score(self, user_id: int) -> int:
+    def get_medal(self, user_id: int):
         if not self.find_user_id_record(user_id=user_id):
-            self.create_user_record(user_id=user_id)
-        self.__cur.execute(f'SELECT best_score FROM user_data WHERE user_id == {user_id}')
+            self.create_user_id_record(user_id=user_id)
+        self.__cur.execute(f'SELECT medals FROM user_data WHERE user_id == {user_id}')
         return self.__cur.fetchone()[0]
