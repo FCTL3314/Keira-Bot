@@ -1,6 +1,5 @@
 import aiogram
 import data
-import filters
 import utils
 import translators
 import random
@@ -37,25 +36,25 @@ async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> st
 
 async def correct_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
     async with state.proxy() as user_data:
-        user_score = user_data['user_score']
+        user_counter = user_data['user_counter']
         learning_words = user_data['learning_words']
-        user_data['user_score'].increment()
+        user_data['user_counter'].increment()
     with utils.sql.database as db:
-        if user_score.get_score() > db.get_best_score(user_id=message.from_user.id):
-            db.update_best_score(score=user_score.get_score(), user_id=message.from_user.id)
-            if not await filters.is_record_message_send(user_score=user_score, state=state):
-                await utils.misc.send_message.send_score_record_message(message=message)
-        if user_score.get_score() == data.config.WORDS_LEARNING_DIFFICULTY:
+        if user_counter.get_score() == data.config.CORRECT_ANSWERS_TO_LEARN_WORDS:
             db.add_learned_words(learned_words=learning_words,  user_id=message.from_user.id)
-    await utils.misc.send_message.send_correct_answer_message(user_score=user_score, message=message)
-    await utils.misc.send_message.send_random_word_message(message=message, state=state)
+            await utils.misc.send_message.send_words_learned_message(message=message)
+            await state.finish()
+        else:
+            await utils.misc.send_message.send_correct_answer_message(user_counter=user_counter, message=message)
+            await utils.misc.send_message.send_random_word_message(message=message, state=state)
 
 
 async def wrong_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
     async with state.proxy() as user_data:
-        user_score = user_data['user_score']
-        await utils.misc.send_message.send_wrong_answer_message(user_score=user_score, message=message, state=state)
-        user_score.reset()
+        user_counter = user_data['user_counter']
+        if user_counter.get_score() > 0:
+            user_counter.decrement()
+        await utils.misc.send_message.send_wrong_answer_message(user_counter=user_counter, message=message, state=state)
     await utils.misc.send_message.send_random_word_message(message=message, state=state)
 
 
@@ -65,6 +64,12 @@ async def generate_not_previous_number(previous_number, number_of_words=data.con
     while ran_num == previous_number:
         ran_num = random.randint(0, number_of_words - 1)
     return ran_num
+
+
+async def create_user_counter_instance(state: aiogram.dispatcher.FSMContext):
+    """"Creates a score instance for the specific user based on its id."""
+    async with state.proxy() as user_data:
+        user_data['user_counter'] = utils.misc.user_counter.UserCounter()
 
 
 def console_display_user_words(username, first_name, learning_words):
