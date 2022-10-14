@@ -5,7 +5,7 @@ import keyboards
 import random
 
 
-async def send_words_accepted_message(learning_words,  learning_words_translated, message: aiogram.types.Message,
+async def send_words_accepted_message(learning_words, learning_words_translated, message: aiogram.types.Message,
                                       number_of_words=data.config.NUMBER_OF_WORDS):
     accepted_words = ''.join(
         f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
@@ -48,58 +48,32 @@ async def send_random_word_message(message: aiogram.types.Message, state: aiogra
     await message.answer(text=f'{learning_words[ran_num]}', disable_notification=True)
 
 
-async def send_correct_answer_message(user_score, message: aiogram.types.Message):
-    if user_score.get_score() <= 20:
-        match user_score.get_score():
-            case 5:
-                await message.answer(text=f'🟢Верно!\nУ тебя не плохо получается!',
-                                     disable_notification=True)
-            case 10:
-                await message.answer(text=f'🟢Верно!\nТы уже на половине пути, не теряй энтузиазма!',
-                                     disable_notification=True)
-            case 15:
-                await message.answer(text=f'🟢Верно!\nЕщё чуть-чуть и ты их выучишь! Осталось совсем ничего!',
-                                     disable_notification=True)
-            case 20:
-                await message.answer(text=f'✅Слова выучены и сохранены!\n'
-                                          f'Написав команду /achievements, ты увидишь библиотеку выученных слов, '
-                                          f'а так же свой лучший счёт.\n'
-                                          f'Далее ты можешь совершенствовать свою серию верных ответов, '
-                                          f'либо написать /stop что бы перестать переводить.',
-                                     disable_notification=True)
-            case _:
-                await message.answer(text=f'🟢Верно!', disable_notification=True)
-    elif user_score.get_score() > 20:
-        await message.answer(
-            text=f'🟢Серия верных ответов: {user_score.get_score()}!', disable_notification=True)
-
-
-async def send_score_record_message(message: aiogram.types.Message):
-    await message.answer(text='🏆Новый рекорд!')
-
-
-async def send_wrong_answer_message(user_score, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
-    wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
-    if 5 <= user_score.get_score() < 15:
-        ran_case = random.randint(0, 2)
-        match ran_case:
-            case 0:
-                await message.answer(
-                    text=f'{wrong_answer_text}Да, знаю. Ошибки не самое приятное чувство.', disable_notification=True)
-            case 1:
-                await message.answer(
-                    text=f'{wrong_answer_text}Без ошибок эти слова уж точно не выучить.', disable_notification=True)
-            case 2:
-                await message.answer(
-                    text=f'{wrong_answer_text}Теперь-то уж ты точно запомнишь это слово.', disable_notification=True)
-    elif 15 <= user_score.get_score() < 20:
-        await message.answer(
-            text=f'{wrong_answer_text}Ничего страшного, ты был почти у цели!',
-            disable_notification=True)
-    elif user_score.get_score() > 20:
-        await message.answer(
-            text=f'{wrong_answer_text}Ничто в мире не бесконечно, как и твоя серия верных ответов.')
+async def send_correct_answer_message(user_counter, message: aiogram.types.Message,
+                                      answers_to_learn_words=data.config.CORRECT_ANSWERS_TO_LEARN_WORDS,
+                                      counter_numbers_to_send_progress=data.COUNTER_NUMBERS_TO_SEND_PROGRESS):
+    if user_counter.get_score() in counter_numbers_to_send_progress:
+        words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
+        await message.answer(text=f'🟢Верно!\n⬆Уровень изученности слов повышен до {words_progress:.0%}',
+                             disable_notification=True)
     else:
+        await message.answer(text=f'🟢Верно!', disable_notification=True)
+
+
+async def send_words_learned_message(message: aiogram.types.Message):
+    await message.answer(text=f'🏆Слова выучены и сохранены в твою библиотеку!',
+                         reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
+                         disable_notification=True)
+
+
+async def send_wrong_answer_message(user_counter, message: aiogram.types.Message,
+                                    state: aiogram.dispatcher.FSMContext,
+                                    answers_to_learn_words=data.config.CORRECT_ANSWERS_TO_LEARN_WORDS,
+                                    counter_numbers_to_send_progress=data.COUNTER_NUMBERS_TO_SEND_PROGRESS):
+    wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
+    if user_counter.get_score() in counter_numbers_to_send_progress:
+        words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(
-            text=f'{wrong_answer_text}',
+            text=f'{wrong_answer_text}⬇Уровень изученности слов понижен до {words_progress:.0%}',
             disable_notification=True)
+    else:
+        await message.answer(text=f'{wrong_answer_text}', disable_notification=True)
