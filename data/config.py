@@ -1,7 +1,7 @@
 import os
 
 
-TOKEN = '5732441956:AAH9B91Ldx-LlMQxP_kyPkzE9FDT7GNIMxA'
+TOKEN = os.getenv('TOKEN')
 
 HEROKU_APP_NAME = os.getenv('HEROKU_APP_NAME')
 
