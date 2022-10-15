@@ -5,7 +5,7 @@ TOKEN = '5732441956:AAH9B91Ldx-LlMQxP_kyPkzE9FDT7GNIMxA'
 
 WEBHOOK_HOST = ''
 WEBHOOK_PATH = ''
-WEBHOOK_URL = f"https://keira-bot.herokuapp.com/{TOKEN}"
+WEBHOOK_URL = f"https://keira-bot.herokuapp.com/"
 
 WEBAPP_HOST = '127.0.0.1'
 WEBAPP_PORT = int(os.getenv('PORT', 5000))
