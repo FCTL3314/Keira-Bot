@@ -15,13 +15,14 @@ async def create_words_example(number_of_words=data.config.NUMBER_OF_WORDS) -> s
 
 async def translate_learning_words(learning_words: List[str],
                                    state: aiogram.dispatcher.FSMContext,
+                                   number_of_words=data.config.NUMBER_OF_WORDS,
                                    from_language=data.config.FROM_LANGUAGE,
                                    to_language=data.config.TO_LANGUAGE) -> List[str]:
     async with state.proxy() as user_data:
         user_data['learning_words_translated'] = [translators.google(
             query_text=learning_words[word],
             from_language=from_language,
-            to_language=to_language).capitalize() for word in range(len(learning_words))]
+            to_language=to_language).capitalize() for word in range(number_of_words)]
         learning_words_translated = user_data['learning_words_translated']
     return learning_words_translated
 
@@ -41,7 +42,7 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         user_data['user_counter'].increment()
     with utils.sql.database as db:
         if user_counter.get_score() == data.config.CORRECT_ANSWERS_TO_LEARN_WORDS:
-            db.add_learned_words(learned_words=learning_words,  user_id=message.from_user.id)
+            db.add_learned_words(learned_words=learning_words, user_id=message.from_user.id)
             await utils.misc.send_message.send_words_learned_message(message=message)
             await state.finish()
         else:
