@@ -19,7 +19,7 @@ async def start_command(message: aiogram.types.Message):
                               f' пока не появится соответствующее сообщение.',
                          disable_notification=True)
     await message.answer(
-        text=f'Написав команду /achievements, ты увидишь библиотеку выученных слов, а так же свой лучший счёт.',
+        text=f'Написав команду /library, ты увидишь библиотеку выученных слов, а так же свой лучший счёт.',
         disable_notification=True)
 
 
