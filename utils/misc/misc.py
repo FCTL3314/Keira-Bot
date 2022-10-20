@@ -40,7 +40,7 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         user_counter = user_data['user_counter']
         learning_words = user_data['learning_words']
         user_data['user_counter'].increment()
-    with utils.sql.database as db:
+    with utils.database.postgres_database as db:
         if user_counter.get_score() == data.config.CORRECT_ANSWERS_TO_LEARN_WORDS:
             db.add_learned_words(learned_words=learning_words, user_id=message.from_user.id)
             await utils.misc.send_message.send_words_learned_message(message=message)

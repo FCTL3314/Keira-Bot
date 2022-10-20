@@ -50,7 +50,7 @@ async def send_random_word_message(message: aiogram.types.Message, state: aiogra
 
 async def send_correct_answer_message(user_counter, message: aiogram.types.Message,
                                       answers_to_learn_words=data.config.CORRECT_ANSWERS_TO_LEARN_WORDS,
-                                      counter_numbers_to_send_progress=data.COUNTER_NUMBERS_TO_SEND_PROGRESS):
+                                      counter_numbers_to_send_progress=data.config.COUNTER_NUMBERS_TO_SEND_PROGRESS):
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(text=f'🟢Верно!\n⬆Уровень изученности слов повышен до {words_progress:.0%}',
@@ -68,7 +68,7 @@ async def send_words_learned_message(message: aiogram.types.Message):
 async def send_wrong_answer_message(user_counter, message: aiogram.types.Message,
                                     state: aiogram.dispatcher.FSMContext,
                                     answers_to_learn_words=data.config.CORRECT_ANSWERS_TO_LEARN_WORDS,
-                                    counter_numbers_to_send_progress=data.COUNTER_NUMBERS_TO_SEND_PROGRESS):
+                                    counter_numbers_to_send_progress=data.config.COUNTER_NUMBERS_TO_SEND_PROGRESS):
     wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
