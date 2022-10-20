@@ -1,5 +1,5 @@
 import aiogram
-import utils.sql
+import utils.database
 
 from loader import bot
 from data.config import WEBHOOK_URL
@@ -13,5 +13,5 @@ async def on_startup(dp):
         aiogram.types.BotCommand('stop', 'Перестать переводить.')
     ])
     await bot.set_webhook(WEBHOOK_URL)
-    with utils.sql.database as db:
+    with utils.database.postgres_database as db:
         db.create_table()
