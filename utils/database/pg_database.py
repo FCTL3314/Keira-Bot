@@ -33,11 +33,11 @@ class PostgresDatabase:
 
     def connect(self):
         self.__conn = psycopg2.connect(
-            host=pg_host_name,
-            dbname=pg_database,
-            user=pg_username,
-            password=pg_password,
-            port=pg_port
+            host=PG_HOST,
+            dbname=PG_DBNAME,
+            user=PG_USER,
+            password=PG_PASSWORD,
+            port=PG_PORT
         )
         self.__cur = self.__conn.cursor()
         self.connected = True
