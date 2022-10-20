@@ -1,15 +1,20 @@
-import sqlite3
+import psycopg2
 
+from data.config import PG_HOST, PG_DBNAME, PG_USER, PG_PASSWORD, PG_PORT
 from typing import List
 
 
-class Database:
-    """The class is designed for the fact that its methods will be called with a context manager."""
-    def __init__(self, location=r'D:\Start Menu\Programming\Keira-Bot\utils\sql\data\data.db'):
-        self.__conn = sqlite3.connect(location, check_same_thread=False)
+class PostgresDatabase:
+    def __init__(self):
+        self.__conn = psycopg2.connect(
+            host=PG_HOST,
+            dbname=PG_DBNAME,
+            user=PG_USER,
+            password=PG_PASSWORD,
+            port=PG_PORT
+        )
         self.__cur = self.__conn.cursor()
         self.connected = True
-        self.__location = location
 
     def __enter__(self):
         if not self.connected:
@@ -17,7 +22,7 @@ class Database:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.connected is True:
+        if self.connected:
             self.__cur.close()
             if isinstance(exc_val, Exception):
                 self.__conn.rollback()
@@ -27,16 +32,26 @@ class Database:
             self.connected = False
 
     def connect(self):
-        self.__conn = sqlite3.connect(self.__location, check_same_thread=False)
+        self.__conn = psycopg2.connect(
+            host=pg_host_name,
+            dbname=pg_database,
+            user=pg_username,
+            password=pg_password,
+            port=pg_port
+        )
         self.__cur = self.__conn.cursor()
         self.connected = True
 
     def create_table(self):
-        self.__cur.execute("CREATE TABLE IF NOT EXISTS 'user_data' ('user_id' INTEGER UNIQUE, "
-                           "'learned_words' TEXT, 'medals'	INTEGER, PRIMARY KEY('user_id'))")
+        self.__cur.execute("""
+        CREATE TABLE IF NOT EXISTS public.user_data (
+        user_id integer,
+        learned_words text,
+        medals integer,
+        PRIMARY KEY (user_id))""")
 
     def find_user_id_record(self, user_id: int) -> bool:
-        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id == "{user_id}"')
+        self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id = {user_id}')
         return bool(self.__cur.fetchone())
 
     def create_user_id_record(self, user_id: int):
@@ -46,29 +61,29 @@ class Database:
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
         if self.get_learned_words(user_id=user_id) is None:
-            self.__cur.execute(f'UPDATE user_data SET learned_words = '
-                               f'"{" ".join(set(learned_words))}" WHERE user_id = {user_id}')
+            self.__cur.execute(
+                f"UPDATE user_data SET learned_words = '{' '.join(set(learned_words))}' WHERE user_id = {user_id}")
         else:
             learned_words_set = set(self.get_learned_words(user_id=user_id) + learned_words)
-            self.__cur.execute(f'UPDATE user_data SET learned_words = '
-                               f'"{" ".join(learned_words_set)}" WHERE user_id = {user_id}')
-
-    def add_medal(self, medal, user_id: int):
-        if not self.find_user_id_record(user_id=user_id):
-            self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f'UPDATE user_data SET medals = {medal} WHERE user_id == {user_id}')
+            self.__cur.execute(
+                f"UPDATE user_data SET learned_words = '{' '.join(learned_words_set)}' WHERE user_id = {user_id}")
 
     def get_learned_words(self, user_id: int) -> List[str]:
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f'SELECT learned_words FROM user_data WHERE user_id == {user_id}')
+        self.__cur.execute(f'SELECT learned_words FROM user_data WHERE user_id = {user_id}')
         if self.__cur.fetchone()[0] is not None:
             self.__cur.execute(
-                f'SELECT learned_words FROM user_data WHERE user_id == {user_id}')
+                f"SELECT learned_words FROM user_data WHERE user_id = {user_id}")
             return self.__cur.fetchone()[0].split()
+
+    def add_medal(self, medal, user_id: int):
+        if not self.find_user_id_record(user_id=user_id):
+            self.create_user_id_record(user_id=user_id)
+        self.__cur.execute(f"UPDATE user_data SET medals = {medal} WHERE user_id = {user_id}")
 
     def get_medal(self, user_id: int):
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f'SELECT medals FROM user_data WHERE user_id == {user_id}')
+        self.__cur.execute(f"SELECT medals FROM user_data WHERE user_id = {user_id}")
         return self.__cur.fetchone()[0]
