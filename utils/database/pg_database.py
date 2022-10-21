@@ -45,7 +45,7 @@ class PostgresDatabase:
     def create_table(self):
         self.__cur.execute("""
         CREATE TABLE IF NOT EXISTS public.user_data (
-        user_id integer,
+        user_id BIGINT,
         learned_words text,
         medals integer,
         PRIMARY KEY (user_id))""")
