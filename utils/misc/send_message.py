@@ -16,20 +16,24 @@ async def send_words_accepted_message(learning_words, learning_words_translated,
                              text=learning_words_translated), disable_notification=True)
 
 
+async def send_words_contains_learned_words_message(message: aiogram.types.Message):
+    await message.answer(text='❕Некоторые из слов уже находятся в твоей библиотеке.')
+
+
 async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message):
     match cause:
         case 'InvalidNumberOfWords':
-            await message.answer(text=f'Ой, что-то пошло не так:\nКол-во твоих слов - {len(learning_words)}.',
+            await message.answer(text=f'⚠️Ой, что-то пошло не так:\nКол-во твоих слов - {len(learning_words)}.',
                                  disable_notification=True)
         case 'WordsContainNumbers':
-            await message.answer(text='Ой, что-то пошло не так:\nВидимо, в введённых тобою словах имеются цифры.',
+            await message.answer(text='⚠️Ой, что-то пошло не так:\nВидимо, в твоих словах имеются цифры.',
                                  disable_notification=True)
         case 'WordsContainPunctuation':
             await message.answer(
-                text='Ой, что-то пошло не так:\nВидимо, в введённых тобою словах имеются пунктуационные символы.',
+                text='⚠️Ой, что-то пошло не так:\nВидимо, в твоих словах имеются пунктуационные символы.',
                 disable_notification=True)
         case 'WordsRepeated':
-            await message.answer(text='Ой, что-то пошло не так:\nНекоторые из твоих слов повторяются.')
+            await message.answer(text='⚠️Ой, что-то пошло не так:\nВидимо, некоторые из твоих слов повторяются.')
 
 
 async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
@@ -74,3 +78,7 @@ async def send_wrong_answer_message(user_counter, message: aiogram.types.Message
             disable_notification=True)
     else:
         await message.answer(text=f'{wrong_answer_text}', disable_notification=True)
+
+
+async def send_unable_execute_stop_command_message(message: aiogram.types.Message):
+    await message.answer(text='Мне нечего останавливать. Напиши /set для начала.', disable_notification=True)
