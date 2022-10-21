@@ -61,7 +61,10 @@ async def is_contains_repeated_words(learning_words: List[str]) -> bool:
 async def is_contains_learned_words(learning_words: List[str], user_id) -> bool:
     with utils.database.postgres_database as db:
         learned_words = db.get_learned_words(user_id=user_id)
-    for word in learning_words:
-        if word in learned_words:
-            return True
-    return False
+    if learned_words is None:
+        return False
+    else:
+        for word in learning_words:
+            if word in learned_words:
+                return True
+        return False
