@@ -54,7 +54,7 @@ async def send_correct_answer_message(user_counter, message: aiogram.types.Messa
                                       counter_numbers_to_send_progress=data.config.COUNTER_NUMBERS_TO_SEND_PROGRESS):
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
-        await message.answer(text=f'🟢Верно!\n⬆Уровень изученности слов повышен до {words_progress:.0%}',
+        await message.answer(text=f'🟢Верно!\n⏫Уровень изученности слов повышен до {words_progress:.0%}',
                              disable_notification=True)
     else:
         await message.answer(text=f'🟢Верно!', disable_notification=True)
@@ -74,7 +74,7 @@ async def send_wrong_answer_message(user_counter, message: aiogram.types.Message
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(
-            text=f'{wrong_answer_text}⬇Уровень изученности слов понижен до {words_progress:.0%}',
+            text=f'{wrong_answer_text}⏬Уровень изученности слов понижен до {words_progress:.0%}',
             disable_notification=True)
     else:
         await message.answer(text=f'{wrong_answer_text}', disable_notification=True)
