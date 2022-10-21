@@ -12,13 +12,17 @@ async def validate_words(learning_words: List[str], message: aiogram.types.Messa
     Validate learning_words for correctness.
     :return: number 1 for conversation handler state.
     """
-    if not await check_for_punctuation(learning_words=''.join(learning_words)):
+    if await is_contains_punctuation(learning_words=''.join(learning_words)):
         await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
                                                                       cause='WordsContainPunctuation',
                                                                       message=message)
-    elif not await check_for_numbers(learning_words=''.join(learning_words)):
+    elif await is_contains_numbers(learning_words=''.join(learning_words)):
         await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
                                                                       cause='WordsContainNumbers',
+                                                                      message=message)
+    elif await is_repeated(learning_words=learning_words):
+        await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
+                                                                      cause='WordsRepeated',
                                                                       message=message)
     elif not len(learning_words) == number_of_words:
         await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
@@ -28,15 +32,24 @@ async def validate_words(learning_words: List[str], message: aiogram.types.Messa
         return True
 
 
-async def check_for_punctuation(learning_words: str) -> bool:
+async def is_contains_punctuation(learning_words: str) -> bool:
     for symbol in learning_words:
         if symbol in punctuation:
-            return False
-    return True
+            return True
+    return False
 
 
-async def check_for_numbers(learning_words: str) -> bool:
+async def is_contains_numbers(learning_words: str) -> bool:
     for symbol in learning_words:
         if symbol.isdigit():
-            return False
-    return True
+            return True
+    return False
+
+
+async def is_repeated(learning_words: List[str]) -> bool:
+    words = dict.fromkeys(learning_words, 1)
+    for word in learning_words:
+        words[word] += 1
+        if words[word] > 1:
+            return True
+    return False
