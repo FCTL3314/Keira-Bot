@@ -19,20 +19,17 @@ async def send_words_accepted_message(learning_words, learning_words_translated,
 async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message):
     match cause:
         case 'InvalidNumberOfWords':
-            await message.answer(
-                text='Ой, что-то пошло не так:\n'
-                     f'Кол-во твоих слов - {len(learning_words)}.',
-                disable_notification=True)
+            await message.answer(text=f'Ой, что-то пошло не так:\nКол-во твоих слов - {len(learning_words)}.',
+                                 disable_notification=True)
         case 'WordsContainNumbers':
-            await message.answer(
-                text='Ой, что-то пошло не так:\n'
-                     'Видимо, в введённых тобою словах имеются цифры.',
-                disable_notification=True)
+            await message.answer(text='Ой, что-то пошло не так:\nВидимо, в введённых тобою словах имеются цифры.',
+                                 disable_notification=True)
         case 'WordsContainPunctuation':
             await message.answer(
-                text='Ой, что-то пошло не так:\n'
-                     'Видимо, в введённых тобою словах имеются пунктуационные символы.',
+                text='Ой, что-то пошло не так:\nВидимо, в введённых тобою словах имеются пунктуационные символы.',
                 disable_notification=True)
+        case 'WordsRepeated':
+            await message.answer(text='Ой, что-то пошло не так:\nНекоторые из твоих слов повторяются.')
 
 
 async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
