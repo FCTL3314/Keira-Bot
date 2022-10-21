@@ -9,7 +9,7 @@ async def send_words_accepted_message(learning_words, learning_words_translated,
                                       number_of_words=data.config.NUMBER_OF_WORDS):
     accepted_words = ''.join(
         f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
-    await message.answer(text=f'Слова приняты:\n{accepted_words}'
+    await message.answer(text=f'✅Слова приняты:\n{accepted_words}'
                               f'Изъявив желание прекратить переводить, напиши /stop.\n'
                               f'Далее тебе необходимо переводить слова:',
                          reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
@@ -81,4 +81,4 @@ async def send_wrong_answer_message(user_counter, message: aiogram.types.Message
 
 
 async def send_unable_execute_stop_command_message(message: aiogram.types.Message):
-    await message.answer(text='Мне нечего останавливать. Напиши /set для начала.', disable_notification=True)
+    await message.answer(text='❕Мне нечего останавливать. Напиши /set для начала.', disable_notification=True)
