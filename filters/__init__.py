@@ -1,1 +1,2 @@
 from filters.validate_words import validate_words
+from filters.validate_words import is_contains_learned_words
