@@ -1,7 +1,7 @@
 import psycopg2
 
-from data.config import PG_HOST, PG_DBNAME, PG_USER, PG_PASSWORD, PG_PORT
 from typing import List
+from data.config import PG_HOST, PG_DBNAME, PG_USER, PG_PASSWORD, PG_PORT
 
 
 class PostgresDatabase:
@@ -47,7 +47,7 @@ class PostgresDatabase:
         CREATE TABLE IF NOT EXISTS public.user_data (
         user_id BIGINT,
         learned_words text,
-        medals integer,
+        scrabble_medal boolean DEFAULT FALSE,
         PRIMARY KEY (user_id))""")
 
     def find_user_id_record(self, user_id: int) -> bool:
@@ -77,13 +77,13 @@ class PostgresDatabase:
                 f"SELECT learned_words FROM user_data WHERE user_id = {user_id}")
             return self.__cur.fetchone()[0].split()
 
-    def add_medal(self, medal, user_id: int):
+    def set_scrabble_medal(self, value, user_id: int):
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f"UPDATE user_data SET medals = {medal} WHERE user_id = {user_id}")
+        self.__cur.execute(f"UPDATE user_data SET scrabble_medal = {value} WHERE user_id = {user_id}")
 
-    def get_medal(self, user_id: int):
+    def get_scrabble_medal(self, user_id: int) -> bool:
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f"SELECT medals FROM user_data WHERE user_id = {user_id}")
+        self.__cur.execute(f"SELECT scrabble_medal FROM user_data WHERE user_id = {user_id}")
         return self.__cur.fetchone()[0]
