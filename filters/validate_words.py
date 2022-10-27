@@ -1,13 +1,13 @@
 import aiogram
-import data
 import utils
 
 from typing import List
 from string import punctuation
+from data.config import NUMBER_OF_WORDS
 
 
 async def validate_words(learning_words: List[str], user_id, message: aiogram.types.Message,
-                         number_of_words=data.config.NUMBER_OF_WORDS) -> bool:
+                         number_of_words=NUMBER_OF_WORDS) -> bool:
     """
     Validate learning_words for correctness.
     :return: number 1 for conversation handler state.
