@@ -1,23 +1,30 @@
+import random
 import aiogram
-import data
 import utils
 import translators
-import random
 
 from typing import List
+from data.config import NUMBER_OF_WORDS, FROM_LANGUAGE, TO_LANGUAGE, CORRECT_ANSWERS_TO_LEARN_WORDS
 
 
-async def create_words_example(number_of_words=data.config.NUMBER_OF_WORDS) -> str:
+async def create_words_example(number_of_words=NUMBER_OF_WORDS) -> str:
     """Return string with the number of words equal to configurations.settings.NUMBER_OF_WORDS."""
     words = ['Berries', 'Apple', 'Cinnamon', 'Coffee', 'Milk', 'Cookies']
     return ' '.join(words[:number_of_words])
 
 
-async def translate_learning_words(learning_words: List[str],
-                                   state: aiogram.dispatcher.FSMContext,
-                                   number_of_words=data.config.NUMBER_OF_WORDS,
-                                   from_language=data.config.FROM_LANGUAGE,
-                                   to_language=data.config.TO_LANGUAGE) -> List[str]:
+async def create_medals_text(message: aiogram.types.Message):
+    user_id = message.from_user.id
+    medals = dict()
+    with utils.database.postgres_database as db:
+        medals["🎓Эрудит"] = db.get_scrabble_medal(user_id=user_id)
+    return ', '.join([i for i in medals if medals[i] is True])
+
+
+async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext,
+                                   number_of_words=NUMBER_OF_WORDS,
+                                   from_language=FROM_LANGUAGE,
+                                   to_language=TO_LANGUAGE) -> List[str]:
     async with state.proxy() as user_data:
         user_data['learning_words_translated'] = [translators.google(
             query_text=learning_words[word],
@@ -36,14 +43,18 @@ async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> st
 
 
 async def correct_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
+    user_id = message.from_user.id
     async with state.proxy() as user_data:
         user_counter = user_data['user_counter']
         learning_words = user_data['learning_words']
         user_data['user_counter'].increment()
     with utils.database.postgres_database as db:
-        if user_counter.get_score() == data.config.CORRECT_ANSWERS_TO_LEARN_WORDS:
-            db.add_learned_words(learned_words=learning_words, user_id=message.from_user.id)
+        if user_counter.get_score() == CORRECT_ANSWERS_TO_LEARN_WORDS:
+            db.add_learned_words(learned_words=learning_words, user_id=user_id)
             await utils.misc.send_message.send_words_learned_message(message=message)
+            if db.get_scrabble_medal(user_id=user_id) is False:
+                db.set_scrabble_medal(user_id=user_id, value=True)
+                await utils.misc.send_message.send_scrabble_medal_received_message(message=message)
             await state.finish()
         else:
             await utils.misc.send_message.send_correct_answer_message(user_counter=user_counter, message=message)
@@ -59,7 +70,7 @@ async def wrong_answer_response(message: aiogram.types.Message, state: aiogram.d
     await utils.misc.send_message.send_random_word_message(message=message, state=state)
 
 
-async def generate_not_previous_number(previous_number, number_of_words=data.config.NUMBER_OF_WORDS):
+async def generate_not_previous_number(previous_number, number_of_words=NUMBER_OF_WORDS):
     """Creates a ran_num different from previous_ran_num"""
     ran_num = random.randint(0, number_of_words - 1)
     while ran_num == previous_number:
