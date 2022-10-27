@@ -1,12 +1,13 @@
+import random
 import aiogram
-import data
 import utils
 import keyboards
-import random
+
+from data.config import NUMBER_OF_WORDS, CORRECT_ANSWERS_TO_LEARN_WORDS, COUNTER_NUMBERS_TO_SEND_PROGRESS
 
 
 async def send_words_accepted_message(learning_words, learning_words_translated, message: aiogram.types.Message,
-                                      number_of_words=data.config.NUMBER_OF_WORDS):
+                                      number_of_words=NUMBER_OF_WORDS):
     accepted_words = ''.join(
         f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
     await message.answer(text=f'✅Слова приняты:\n{accepted_words}'
@@ -20,10 +21,12 @@ async def send_words_contains_learned_words_message(message: aiogram.types.Messa
                               '⚠️Сохранены будут только новые слова.')
 
 
-async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message):
+async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message,
+                                          number_of_words=NUMBER_OF_WORDS):
     match cause:
         case 'InvalidNumberOfWords':
-            await message.answer(text=f'❗Ой, что-то пошло не так:\nКол-во твоих слов - {len(learning_words)}.',
+            await message.answer(text=f'❗Ой, что-то пошло не так:\nКол-во твоих слов - {len(learning_words)}.\n'
+                                      f'Требуемое кол-во - {number_of_words}.',
                                  disable_notification=True)
         case 'WordsContainNumbers':
             await message.answer(text='❗Ой, что-то пошло не так:\nВидимо, в твоих словах имеются цифры.',
@@ -37,7 +40,7 @@ async def send_words_not_accepted_message(learning_words, cause: str, message: a
 
 
 async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
-                                   number_of_words=data.config.NUMBER_OF_WORDS):
+                                   number_of_words=NUMBER_OF_WORDS):
     """Send random generated not previous word message"""
     async with state.proxy() as user_data:
         if 'ran_num' in user_data:
@@ -50,8 +53,8 @@ async def send_random_word_message(message: aiogram.types.Message, state: aiogra
 
 
 async def send_correct_answer_message(user_counter, message: aiogram.types.Message,
-                                      answers_to_learn_words=data.config.CORRECT_ANSWERS_TO_LEARN_WORDS,
-                                      counter_numbers_to_send_progress=data.config.COUNTER_NUMBERS_TO_SEND_PROGRESS):
+                                      answers_to_learn_words=CORRECT_ANSWERS_TO_LEARN_WORDS,
+                                      counter_numbers_to_send_progress=COUNTER_NUMBERS_TO_SEND_PROGRESS):
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(text=f'🟢Верно!\n⏫Уровень изученности слов повышен до {words_progress:.0%}',
@@ -61,15 +64,18 @@ async def send_correct_answer_message(user_counter, message: aiogram.types.Messa
 
 
 async def send_words_learned_message(message: aiogram.types.Message):
-    await message.answer(text=f'🏆Слова выучены и сохранены в твою библиотеку!',
+    await message.answer(text=f'🎉Слова выучены и сохранены в твою библиотеку!',
                          reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
                          disable_notification=True)
 
 
-async def send_wrong_answer_message(user_counter, message: aiogram.types.Message,
-                                    state: aiogram.dispatcher.FSMContext,
-                                    answers_to_learn_words=data.config.CORRECT_ANSWERS_TO_LEARN_WORDS,
-                                    counter_numbers_to_send_progress=data.config.COUNTER_NUMBERS_TO_SEND_PROGRESS):
+async def send_scrabble_medal_received_message(message: aiogram.types.Message):
+    await message.answer(text=f"🏆Выучив первые слова ты награждаешься медалью 🎓Эрудит!")
+
+
+async def send_wrong_answer_message(user_counter, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
+                                    answers_to_learn_words=CORRECT_ANSWERS_TO_LEARN_WORDS,
+                                    counter_numbers_to_send_progress=COUNTER_NUMBERS_TO_SEND_PROGRESS):
     wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
