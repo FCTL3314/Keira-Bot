@@ -64,13 +64,18 @@ async def send_correct_answer_message(user_counter, message: aiogram.types.Messa
 
 
 async def send_words_learned_message(message: aiogram.types.Message):
-    await message.answer(text=f'🎉Слова выучены и сохранены в твою библиотеку!',
+    await message.answer(text=f'📜Слова выучены и сохранены в твою библиотеку!',
                          reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
                          disable_notification=True)
 
 
-async def send_scrabble_medal_received_message(message: aiogram.types.Message):
-    await message.answer(text=f"🏆Выучив первые слова ты награждаешься медалью 🎓Эрудит!")
+async def send_scrabble_achievement_received_message(message: aiogram.types.Message):
+    await message.answer(text=f"🏵Выучив первые слова, ты награждаешься медалью 🎓Эрудит!")
+
+
+async def send_pioneer_achievement_received_message(message: aiogram.types):
+    await message.answer(text='🏵За использование проекта, начиная с самых ранних дней, '
+                              'ты награждаешься медалью 🌄С самых ранних дней!')
 
 
 async def send_wrong_answer_message(user_counter, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
