@@ -13,12 +13,15 @@ async def create_words_example(number_of_words=NUMBER_OF_WORDS) -> str:
     return ' '.join(words[:number_of_words])
 
 
-async def create_medals_text(message: aiogram.types.Message):
+async def create_achievements_text(message: aiogram.types.Message):
     user_id = message.from_user.id
-    medals = dict()
+    achievements = list()
     with utils.database.postgres_database as db:
-        medals["🎓Эрудит"] = db.get_scrabble_medal(user_id=user_id)
-    return ', '.join([i for i in medals if medals[i] is True])
+        if db.get_pioneer_achievement(user_id=user_id):
+            achievements.append("🌄С самых ранних дней - Спасибо за использование проекта, начиная с самых ранних дней!")
+        if db.get_scrabble_achievement(user_id=user_id):
+            achievements.append("🎓Эрудит - Выучить свои первые слова.")
+    return '\n\n'.join(achievements)
 
 
 async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext,
@@ -52,9 +55,9 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         if user_counter.get_score() == CORRECT_ANSWERS_TO_LEARN_WORDS:
             db.add_learned_words(learned_words=learning_words, user_id=user_id)
             await utils.misc.send_message.send_words_learned_message(message=message)
-            if db.get_scrabble_medal(user_id=user_id) is False:
-                db.set_scrabble_medal(user_id=user_id, value=True)
-                await utils.misc.send_message.send_scrabble_medal_received_message(message=message)
+            if not db.get_scrabble_achievement(user_id=user_id):
+                db.set_scrabble_achievement(user_id=user_id)
+                await utils.misc.send_message.send_scrabble_achievement_received_message(message=message)
             await state.finish()
         else:
             await utils.misc.send_message.send_correct_answer_message(user_counter=user_counter, message=message)
