@@ -1,4 +1,4 @@
-import handlers.library_command
+import handlers.progress_command
 import handlers.check_translated_word_correctness
 import handlers.get_learning_words
 import handlers.set_command
