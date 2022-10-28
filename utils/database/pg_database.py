@@ -47,7 +47,8 @@ class PostgresDatabase:
         CREATE TABLE IF NOT EXISTS public.user_data (
         user_id BIGINT,
         learned_words text,
-        scrabble_medal boolean DEFAULT FALSE,
+        scrabble_achievement boolean DEFAULT FALSE,
+        pioneer_achievement boolean DEFAULT FALSE,
         PRIMARY KEY (user_id))""")
 
     def find_user_id_record(self, user_id: int) -> bool:
@@ -77,13 +78,24 @@ class PostgresDatabase:
                 f"SELECT learned_words FROM user_data WHERE user_id = {user_id}")
             return self.__cur.fetchone()[0].split()
 
-    def set_scrabble_medal(self, value, user_id: int):
+    def set_scrabble_achievement(self, user_id: int, value=True):
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f"UPDATE user_data SET scrabble_medal = {value} WHERE user_id = {user_id}")
+        self.__cur.execute(f"UPDATE user_data SET scrabble_achievement = {value} WHERE user_id = {user_id}")
 
-    def get_scrabble_medal(self, user_id: int) -> bool:
+    def get_scrabble_achievement(self, user_id: int) -> bool:
         if not self.find_user_id_record(user_id=user_id):
             self.create_user_id_record(user_id=user_id)
-        self.__cur.execute(f"SELECT scrabble_medal FROM user_data WHERE user_id = {user_id}")
+        self.__cur.execute(f"SELECT scrabble_achievement FROM user_data WHERE user_id = {user_id}")
+        return self.__cur.fetchone()[0]
+
+    def set_pioneer_achievement(self, user_id: int, value=True):
+        if not self.find_user_id_record(user_id=user_id):
+            self.create_user_id_record(user_id=user_id)
+        self.__cur.execute(f"UPDATE user_data SET pioneer_achievement = {value} WHERE user_id = {user_id}")
+
+    def get_pioneer_achievement(self, user_id: int):
+        if not self.find_user_id_record(user_id=user_id):
+            self.create_user_id_record(user_id=user_id)
+        self.__cur.execute(f"SELECT pioneer_achievement FROM user_data WHERE user_id = {user_id}")
         return self.__cur.fetchone()[0]
