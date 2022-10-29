@@ -5,10 +5,11 @@ import utils
 async def start_command(message: aiogram.types.Message):
     """Send a message that informs the user"""
     user_id = message.from_user.id
-    await message.answer(text=f'Привет {message.from_user.first_name}! Меня зовут Кейра.\n'
+    await message.answer(text=f'✋Привет {message.from_user.first_name}! Меня зовут Кейра.\n'
                               'Я буду помогать тебе изучать английские слова. '
-                              'Переводя их, они постепенно будут учиться, пока не станут выученными. '
-                              'Выученные слова, добавляются в твою библиотеку.'
+                              'Переводя их, ты повышаешь степень изученности слов до тех пор, '
+                              'пока они не станут выученными. '
+                              'Выученные слова, добавляются в твою библиотеку. '
                               'Вдобавок, я буду награждать тебя различными достижениями.',
                          disable_notification=True)
     await message.answer(
