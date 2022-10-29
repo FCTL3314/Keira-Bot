@@ -1,9 +1,10 @@
 import random
 import aiogram
 import utils
-import translators
+import async_google_trans_new
 
 from typing import List
+from datetime import datetime
 from data.config import NUMBER_OF_WORDS, FROM_LANGUAGE, TO_LANGUAGE, CORRECT_ANSWERS_TO_LEARN_WORDS
 
 
@@ -24,17 +25,17 @@ async def create_achievements_text(message: aiogram.types.Message):
     return '\n\n● '.join(achievements)
 
 
-async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext,
-                                   number_of_words=NUMBER_OF_WORDS,
-                                   from_language=FROM_LANGUAGE,
-                                   to_language=TO_LANGUAGE) -> List[str]:
+async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext) -> List[str]:
+    translator = async_google_trans_new.AsyncTranslator()
     async with state.proxy() as user_data:
-        user_data['learning_words_translated'] = [translators.google(
-            query_text=learning_words[word],
-            from_language=from_language,
-            to_language=to_language).capitalize() for word in range(number_of_words)]
-        learning_words_translated = user_data['learning_words_translated']
-    return learning_words_translated
+        user_data['learning_words_translated'] = [await translator.translate(
+            text=learning_words[word],
+            lang_src=FROM_LANGUAGE,
+            lang_tgt=TO_LANGUAGE) for word in range(NUMBER_OF_WORDS)]
+        # Capitalize and removes last symbol from every word due to the inability to do this in the coroutine object.
+        user_data['learning_words_translated'] = [user_data['learning_words_translated'][word][:-1].capitalize() for
+                                                  word in range(NUMBER_OF_WORDS)]
+    return user_data['learning_words_translated']
 
 
 async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> str:
@@ -89,6 +90,16 @@ async def create_user_counter_instance(state: aiogram.dispatcher.FSMContext):
 
 def console_display_user_words(username, first_name, learning_words):
     if username:
-        print(f'{username} - {learning_words}')
+        print(f' {username} - {learning_words} at {current_time()}')
     else:
-        print(f'{first_name} - {learning_words}')
+        print(f'{first_name} - {learning_words} at {current_time()}')
+
+
+def current_time():
+    time = datetime.now()
+    day = time.day
+    month = time.month
+    year = time.year
+    hour = time.hour
+    minute = time.minute
+    return f"{day}.{month}.{year} {hour}:{minute}"
