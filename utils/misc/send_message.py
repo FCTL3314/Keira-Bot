@@ -17,26 +17,27 @@ async def send_words_accepted_message(learning_words, learning_words_translated,
 
 
 async def send_words_contains_learned_words_message(message: aiogram.types.Message):
-    await message.answer(text='❕Некоторые из слов уже находятся в твоей библиотеке.\n'
-                              '⚠️Сохранены будут только новые слова.')
+    await message.answer(text='⚠️Некоторые из слов уже находятся в твоей библиотеке. '
+                              'Сохранены будут только новые слова.')
 
 
 async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message,
                                           number_of_words=NUMBER_OF_WORDS):
     match cause:
         case 'InvalidNumberOfWords':
-            await message.answer(text=f'❗Ой, что-то пошло не так:\nКол-во твоих слов - {len(learning_words)}.\n'
-                                      f'Требуемое кол-во - {number_of_words}.',
+            await message.answer(text=f'❗Ой, что-то пошло не так:\nТы ввёл {len(learning_words)} '
+                                      f'{"слова" if 4 >= number_of_words > 1 else "слов"}, '
+                                      f'в то время, как требуемое кол-во {number_of_words}.',
                                  disable_notification=True)
         case 'WordsContainNumbers':
-            await message.answer(text='❗Ой, что-то пошло не так:\nВидимо, в твоих словах имеются цифры.',
+            await message.answer(text='❗Ой, что-то пошло не так:\nВ твоих словах имеются цифры.',
                                  disable_notification=True)
         case 'WordsContainPunctuation':
             await message.answer(
-                text='❗Ой, что-то пошло не так:\nВидимо, в твоих словах имеются пунктуационные символы.',
+                text='❗Ой, что-то пошло не так:\nВ твоих словах имеются пунктуационные символы.',
                 disable_notification=True)
         case 'WordsRepeated':
-            await message.answer(text='❗Ой, что-то пошло не так:\nВидимо, некоторые из твоих слов повторяются.')
+            await message.answer(text='❗Ой, что-то пошло не так:\nНекоторые из твоих слов повторяются.')
 
 
 async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
