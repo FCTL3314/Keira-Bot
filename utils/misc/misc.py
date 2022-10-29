@@ -21,7 +21,7 @@ async def create_achievements_text(message: aiogram.types.Message):
             achievements.append("🌄Первопроходец - Спасибо за использование проекта, начиная с самых ранних дней!")
         if db.get_scrabble_achievement(user_id=user_id):
             achievements.append("🎓Эрудит - Выучить свои первые слова.")
-    return '\n\n'.join(achievements)
+    return '\n\n● '.join(achievements)
 
 
 async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext,
