@@ -71,12 +71,13 @@ async def send_words_learned_message(message: aiogram.types.Message):
 
 
 async def send_scrabble_achievement_received_message(message: aiogram.types.Message):
-    await message.answer(text=f"🏵Добавив в библиотеку первые слова, ты награждаешься достижением 🎓Эрудит!")
+    await message.answer(text=f"🏵Добавив в библиотеку первые слова, ты награждаешься достижением 🎓Эрудит!",
+                         disable_notification=True)
 
 
 async def send_pioneer_achievement_received_message(message: aiogram.types):
     await message.answer(text='🏵За использование проекта, начиная с его самых ранних дней, '
-                              'ты награждаешься достижением 🌄Первопроходец!')
+                              'ты награждаешься достижением 🌄Первопроходец!', disable_notification=True)
 
 
 async def send_wrong_answer_message(user_counter, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
