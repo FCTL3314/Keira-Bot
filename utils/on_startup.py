@@ -5,7 +5,7 @@ from loader import bot
 from data.config import WEBHOOK_URL
 
 
-async def on_startup(dp):
+async def on_startup(dp: aiogram.Dispatcher):
     await bot.set_my_commands([
         aiogram.types.BotCommand('start', 'Начальная информация.'),
         aiogram.types.BotCommand('set', 'Указать изучаемые слова.'),
