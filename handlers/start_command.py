@@ -17,7 +17,7 @@ async def start_command(message: aiogram.types.Message):
         disable_notification=True)
     with utils.database.postgres_database as db:
         if not db.get_pioneer_achievement(user_id=user_id):
-            db.set_pioneer_achievement(user_id=user_id)
+            await db.set_pioneer_achievement(user_id=user_id)
             await utils.misc.send_message.send_pioneer_achievement_received_message(message=message)
 
 

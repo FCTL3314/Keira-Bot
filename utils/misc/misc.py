@@ -18,9 +18,9 @@ async def create_achievements_text(message: aiogram.types.Message):
     user_id = message.from_user.id
     achievements = list()
     with utils.database.postgres_database as db:
-        if db.get_pioneer_achievement(user_id=user_id):
+        if await db.get_pioneer_achievement(user_id=user_id):
             achievements.append("🌄Первопроходец - Спасибо за использование проекта, начиная с самых ранних дней!")
-        if db.get_scrabble_achievement(user_id=user_id):
+        if await db.get_scrabble_achievement(user_id=user_id):
             achievements.append("🎓Эрудит - Выучить свои первые слова.")
     return '\n\n● '.join(achievements)
 
@@ -33,7 +33,7 @@ async def translate_learning_words(learning_words: List[str], state: aiogram.dis
             lang_src=FROM_LANGUAGE,
             lang_tgt=TO_LANGUAGE) for word in range(NUMBER_OF_WORDS)]
         # Capitalize and removes last symbol from every word due to the inability to do this in the coroutine object.
-        user_data['learning_words_translated'] = [user_data['learning_words_translated'][word][:-1].capitalize() for
+        user_data['learning_words_translated'] = [user_data['learning_words_translated'][word].strip().capitalize() for
                                                   word in range(NUMBER_OF_WORDS)]
     return user_data['learning_words_translated']
 
@@ -54,10 +54,10 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         user_data['user_counter'].increment()
     with utils.database.postgres_database as db:
         if user_counter.get_score() == CORRECT_ANSWERS_TO_LEARN_WORDS:
-            db.add_learned_words(learned_words=learning_words, user_id=user_id)
+            await db.add_learned_words(learned_words=learning_words, user_id=user_id)
             await utils.misc.send_message.send_words_learned_message(message=message)
-            if not db.get_scrabble_achievement(user_id=user_id):
-                db.set_scrabble_achievement(user_id=user_id)
+            if not await db.get_scrabble_achievement(user_id=user_id):
+                await db.set_scrabble_achievement(user_id=user_id)
                 await utils.misc.send_message.send_scrabble_achievement_received_message(message=message)
             await state.finish()
         else:

@@ -7,7 +7,7 @@ async def send_progress_message(message: aiogram.types.Message):
     user_id = message.from_user.id
     achievements_text = await utils.misc.create_achievements_text(message=message)
     with utils.database.postgres_database as db:
-        learned_words = db.get_learned_words(user_id=user_id)
+        learned_words = await db.get_learned_words(user_id=user_id)
     if learned_words is None:
         await message.answer(text=f'🕸Пытаясь найти твои слова, я сделала вывод, что их нет.',
                              disable_notification=True)
