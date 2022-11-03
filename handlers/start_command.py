@@ -3,7 +3,6 @@ import utils
 
 
 async def start_command(message: aiogram.types.Message):
-    """Send a message that informs the user"""
     user_id = message.from_user.id
     await message.answer(text=f'✋Привет {message.from_user.first_name}! Меня зовут Кейра.\n'
                               'Я буду помогать тебе изучать английские слова. '

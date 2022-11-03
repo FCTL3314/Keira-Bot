@@ -6,12 +6,6 @@ import states
 
 async def send_ask_for_words_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
                                      number_of_words=data.config.NUMBER_OF_WORDS):
-    """
-    Entry-point of the ConversationHandler
-    Asks the User to enter a words.
-    Creates a score instance for a specific user.
-    :return: number 0 for conversation handler state.
-    """
     await message.answer(
         text=f'Введи {number_of_words}'
              f' {"изучаемых английских слова." if 4 >= number_of_words > 1 else "изучаемых английских слов."}\n'

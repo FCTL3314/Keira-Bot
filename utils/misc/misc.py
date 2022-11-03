@@ -9,7 +9,6 @@ from data.config import NUMBER_OF_WORDS, FROM_LANGUAGE, TO_LANGUAGE, CORRECT_ANS
 
 
 async def create_words_example(number_of_words=NUMBER_OF_WORDS) -> str:
-    """Return string with the number of words equal to configurations.settings.NUMBER_OF_WORDS."""
     words = ['Berries', 'Apple', 'Cinnamon', 'Coffee', 'Milk', 'Cookies']
     return ' '.join(words[:number_of_words])
 
@@ -75,7 +74,6 @@ async def wrong_answer_response(message: aiogram.types.Message, state: aiogram.d
 
 
 async def generate_not_previous_number(previous_number, number_of_words=NUMBER_OF_WORDS):
-    """Creates a ran_num different from previous_ran_num"""
     ran_num = random.randint(0, number_of_words - 1)
     while ran_num == previous_number:
         ran_num = random.randint(0, number_of_words - 1)
