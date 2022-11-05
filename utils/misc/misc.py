@@ -67,8 +67,7 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
 async def wrong_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
     async with state.proxy() as user_data:
         user_counter = user_data['user_counter']
-        if user_counter.get_score() > 0:
-            user_counter.decrement()
+        user_counter.decrement()
         await utils.misc.send_message.send_wrong_answer_message(user_counter=user_counter, message=message, state=state)
     await utils.misc.send_message.send_random_word_message(message=message, state=state)
 
