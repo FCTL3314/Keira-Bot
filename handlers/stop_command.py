@@ -14,4 +14,4 @@ def register_stop_command_handler(dp: aiogram.Dispatcher):
     dp.register_message_handler(callback=utils.misc.send_message.send_unable_execute_stop_command_message,
                                 commands=['stop'])
     dp.register_message_handler(callback=send_stop_translating_message, commands=['stop'],
-                                state=states.learn_words.LearnWords.check_answer_correctness)
+                                state=states.set_command_state.SetCommandStates.check_answer_correctness)

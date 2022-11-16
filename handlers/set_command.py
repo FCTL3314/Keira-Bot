@@ -13,7 +13,7 @@ async def send_ask_for_words_message(message: aiogram.types.Message, state: aiog
              f'Пример: {await utils.misc.misc.create_words_example()}',
         disable_notification=True)
     await utils.misc.create_user_counter_instance(state=state)
-    await states.learn_words.LearnWords.get_learning_words.set()
+    await states.set_command_state.SetCommandStates.get_learning_words.set()
 
 
 def register_set_command_handlers(dp: aiogram.Dispatcher):
