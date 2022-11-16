@@ -26,15 +26,14 @@ async def create_achievements_text(message: aiogram.types.Message):
 
 async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext) -> List[str]:
     translator = async_google_trans_new.AsyncTranslator()
-    async with state.proxy() as user_data:
-        user_data['learning_words_translated'] = [await translator.translate(
-            text=learning_words[word],
-            lang_src=FROM_LANGUAGE,
-            lang_tgt=TO_LANGUAGE) for word in range(NUMBER_OF_WORDS)]
-        # Capitalize and removes last symbol from every word due to the inability to do this in the coroutine object.
-        user_data['learning_words_translated'] = [user_data['learning_words_translated'][word].strip().capitalize() for
-                                                  word in range(NUMBER_OF_WORDS)]
-    return user_data['learning_words_translated']
+    translated_words = [await translator.translate(
+        text=learning_words[word],
+        lang_src=FROM_LANGUAGE,
+        lang_tgt=TO_LANGUAGE) for word in range(NUMBER_OF_WORDS)]
+    # Capitalize and removes last symbol from every word due to the inability to do this in the coroutine object.
+    learning_words_translated = [translated_words[word].strip().capitalize() for
+                                 word in range(NUMBER_OF_WORDS)]
+    return learning_words_translated
 
 
 async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> str:
