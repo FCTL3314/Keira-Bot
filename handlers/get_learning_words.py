@@ -21,9 +21,9 @@ async def get_learning_words(message: aiogram.types.Message, state: aiogram.disp
                                                                   learning_words_translated=learning_words_translated,
                                                                   message=message)
         await utils.misc.send_message.send_random_word_message(message=message, state=state)
-        await states.learn_words_steps.LearnWordsSteps.next()
+        await states.learn_words.LearnWords.next()
 
 
 def register_get_learning_words_handlers(dp: aiogram.Dispatcher):
     dp.register_message_handler(callback=get_learning_words, content_types=['text'],
-                                state=states.learn_words_steps.LearnWordsSteps.get_learning_words_state)
+                                state=states.learn_words.LearnWords.get_learning_words)

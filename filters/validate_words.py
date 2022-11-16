@@ -8,10 +8,6 @@ from data.config import NUMBER_OF_WORDS
 
 async def validate_words(learning_words: List[str], user_id, message: aiogram.types.Message,
                          number_of_words=NUMBER_OF_WORDS) -> bool:
-    """
-    Validate learning_words for correctness.
-    :return: number 1 for conversation handler state.
-    """
     if await is_contains_punctuation(learning_words=''.join(learning_words)):
         await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
                                                                       cause='WordsContainPunctuation',
@@ -60,7 +56,7 @@ async def is_contains_repeated_words(learning_words: List[str]) -> bool:
 
 async def is_contains_learned_words(learning_words: List[str], user_id) -> bool:
     with utils.database.postgres_database as db:
-        learned_words = db.get_learned_words(user_id=user_id)
+        learned_words = await db.get_learned_words(user_id=user_id)
     if learned_words is None:
         return False
     else:
