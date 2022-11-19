@@ -24,7 +24,7 @@ async def create_achievements_text(message: aiogram.types.Message):
     return '\n\n● '.join(achievements)
 
 
-async def translate_learning_words(learning_words: List[str], state: aiogram.dispatcher.FSMContext) -> List[str]:
+async def translate_learning_words(learning_words: List[str]) -> List[str]:
     translator = async_google_trans_new.AsyncTranslator()
     translated_words = [await translator.translate(
         text=learning_words[word],
