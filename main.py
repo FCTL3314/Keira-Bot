@@ -1,3 +1,4 @@
+import time
 import logging
 import aiogram
 import handlers
@@ -31,4 +32,5 @@ if __name__ == "__main__":
                 port=WEBAPP_PORT
             )
         except Exception as e:
-            logging.error(msg=e)
+            logging.exception(msg=e)
+            time.sleep(15)
