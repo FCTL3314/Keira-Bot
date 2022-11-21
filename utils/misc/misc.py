@@ -1,10 +1,10 @@
 import random
+import logging
 import aiogram
 import utils
 import async_google_trans_new
 
 from typing import List
-from datetime import datetime
 from data.config import NUMBER_OF_WORDS, FROM_LANGUAGE, TO_LANGUAGE, CORRECT_ANSWERS_TO_LEARN_WORDS
 
 
@@ -84,18 +84,8 @@ async def create_user_counter_instance(state: aiogram.dispatcher.FSMContext):
         user_data['user_counter'] = utils.misc.user_counter.UserCounter()
 
 
-def console_display_user_words(username, first_name, learning_words):
+def log_user_words(username, first_name, learning_words):
     if username:
-        print(f' {username} - {learning_words} at {current_time()}')
+        logging.info(msg=f' {username} - {learning_words}')
     else:
-        print(f'{first_name} - {learning_words} at {current_time()}')
-
-
-def current_time():
-    time = datetime.now()
-    day = time.day
-    month = time.month
-    year = time.year
-    hour = time.hour
-    minute = time.minute
-    return f"{day}.{month}.{year} {hour}:{minute}"
+        logging.info(msg=f'{first_name} - {learning_words}')
