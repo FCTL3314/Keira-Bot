@@ -4,7 +4,8 @@ import states
 
 
 async def send_stop_translating_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
-    await message.answer(text='Останавливаюсь...\nНапиши /set если желаешь начать заново.',
+    await message.answer(text='✅*Остановлено.*\nНапиши /set если желаешь начать заново.',
+                         parse_mode='Markdown',
                          reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
                          disable_notification=True)
     await state.finish()
