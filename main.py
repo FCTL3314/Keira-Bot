@@ -31,6 +31,6 @@ if __name__ == "__main__":
                 host=WEBAPP_HOST,
                 port=WEBAPP_PORT
             )
-        except Exception as e:
-            logging.exception(msg=e)
+        except Exception as log_info:
+            logging.exception(msg=log_info)
             time.sleep(15)
