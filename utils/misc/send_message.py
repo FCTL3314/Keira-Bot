@@ -10,34 +10,39 @@ async def send_words_accepted_message(learning_words, learning_words_translated,
                                       number_of_words=NUMBER_OF_WORDS):
     accepted_words = ''.join(
         f'{learning_words[i]} - {learning_words_translated[i]}\n' for i in range(number_of_words))
-    await message.answer(text=f'✅Слова приняты:\n{accepted_words}'
-                              f'Изъявив желание прекратить переводить, напиши /stop.',
+    await message.answer(text=f'✅*Слова приняты:*\n{accepted_words}'
+                              f'*Изъявив желание прекратить переводить, напиши* /stop.',
+                         parse_mode='Markdown',
                          reply_markup=keyboards.default.create_keyboard_markup.create_keyboard_markup(
                              text=learning_words_translated), disable_notification=True)
 
 
 async def send_words_contains_learned_words_message(message: aiogram.types.Message):
-    await message.answer(text='⚠️Некоторые из слов уже находятся в твоей библиотеке. '
-                              'Сохранены будут только новые слова.')
+    await message.answer(text='⚠️*Некоторые из слов уже находятся в твоей библиотеке. '
+                              'Сохранены будут только новые слова.*', parse_mode='Markdown', disable_notification=True)
 
 
 async def send_words_not_accepted_message(learning_words, cause: str, message: aiogram.types.Message,
                                           number_of_words=NUMBER_OF_WORDS):
     match cause:
         case 'InvalidNumberOfWords':
-            await message.answer(text=f'❗Ой, что-то пошло не так:\nТы ввёл {len(learning_words)} '
+            await message.answer(text=f'❗*Ой, что-то пошло не так:*\nТы ввёл {len(learning_words)} '
                                       f'{"слова" if 4 >= number_of_words > 1 else "слов"}, '
                                       f'в то время, как требуемое кол-во {number_of_words}.',
+                                 parse_mode='Markdown',
                                  disable_notification=True)
         case 'WordsContainNumbers':
-            await message.answer(text='❗Ой, что-то пошло не так:\nВ твоих словах имеются цифры.',
+            await message.answer(text='❗*Ой, что-то пошло не так:*\nВ твоих словах имеются цифры.',
+                                 parse_mode='Markdown',
                                  disable_notification=True)
         case 'WordsContainPunctuation':
             await message.answer(
-                text='❗Ой, что-то пошло не так:\nВ твоих словах имеются пунктуационные символы.',
+                text='❗*Ой, что-то пошло не так:*\nВ твоих словах имеются пунктуационные символы.',
+                parse_mode='Markdown',
                 disable_notification=True)
         case 'WordsRepeated':
-            await message.answer(text='❗Ой, что-то пошло не так:\nНекоторые из твоих слов повторяются.')
+            await message.answer(text='❗*Ой, что-то пошло не так:*\nНекоторые из твоих слов повторяются.',
+                                 parse_mode='Markdown', )
 
 
 async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
@@ -58,39 +63,47 @@ async def send_correct_answer_message(user_counter, message: aiogram.types.Messa
                                       counter_numbers_to_send_progress=COUNTER_NUMBERS_TO_SEND_PROGRESS):
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
-        await message.answer(text=f'🟢Верно!\n⏫Уровень изученности слов повышен до {words_progress:.0%}',
+        await message.answer(text=f'🟢*Верно*!\n⏫Уровень изученности слов повышен до *{words_progress:.0%}*',
+                             parse_mode='Markdown',
                              disable_notification=True)
     else:
-        await message.answer(text=f'🟢Верно!', disable_notification=True)
+        await message.answer(text=f'🟢*Верно*!', parse_mode='Markdown', disable_notification=True)
 
 
 async def send_words_learned_message(message: aiogram.types.Message):
-    await message.answer(text=f'📜Слова выучены и сохранены в твою библиотеку!',
+    await message.answer(text=f'📜*Слова выучены и сохранены в твою библиотеку*!',
+                         parse_mode='Markdown',
                          reply_markup=aiogram.types.reply_keyboard.ReplyKeyboardRemove(),
                          disable_notification=True)
 
 
 async def send_scrabble_achievement_received_message(message: aiogram.types.Message):
-    await message.answer(text=f"🏵Добавив в библиотеку первые слова, ты награждаешься достижением 🎓Эрудит!",
+    await message.answer(text=f"🏵Добавив в библиотеку первые слова, ты награждаешься достижением 🎓*Эрудит*!",
+                         parse_mode='Markdown',
                          disable_notification=True)
 
 
 async def send_pioneer_achievement_received_message(message: aiogram.types):
     await message.answer(text='🏵За использование проекта, начиная с его самых ранних дней, '
-                              'ты награждаешься достижением 🌄Первопроходец!', disable_notification=True)
+                              'ты награждаешься достижением 🌄*Первопроходец*!', parse_mode='Markdown',
+                         disable_notification=True)
 
 
 async def send_wrong_answer_message(user_counter, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
                                     answers_to_learn_words=CORRECT_ANSWERS_TO_LEARN_WORDS,
                                     counter_numbers_to_send_progress=COUNTER_NUMBERS_TO_SEND_PROGRESS):
-    wrong_answer_text = f'🔴Неверно.\nПравильный вариант - {await utils.misc.get_random_translated_word(state=state)}.\n'
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(
-            text=f'{wrong_answer_text}⏬Уровень изученности слов понижен до {words_progress:.0%}',
+            text=f'🔴*Неверно*.\nПравильный вариант - *{await utils.misc.get_random_translated_word(state=state)}*.\n'
+                 f'⏬Уровень изученности слов понижен до *{words_progress:.0%}*',
+            parse_mode='Markdown',
             disable_notification=True)
     else:
-        await message.answer(text=f'{wrong_answer_text}', disable_notification=True)
+        await message.answer(text=f'🔴*Неверно*.\nПравильный вариант - '
+                                  f'*{await utils.misc.get_random_translated_word(state=state)}*.\n',
+                             parse_mode='Markdown',
+                             disable_notification=True)
 
 
 async def send_unable_execute_stop_command_message(message: aiogram.types.Message):
