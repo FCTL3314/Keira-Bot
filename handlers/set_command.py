@@ -7,10 +7,11 @@ import states
 async def send_ask_for_words_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
                                      number_of_words=data.config.NUMBER_OF_WORDS):
     await message.answer(
-        text=f'Введи {number_of_words}'
-             f' {"изучаемых английских слова." if 4 >= number_of_words > 1 else "изучаемых английских слов."}\n'
-             f'Слова необходимо разделить пробелом и записать в одну строку.\n'
-             f'Пример: {await utils.misc.misc.create_words_example()}',
+        text=f'💬Введи *{number_of_words}* '
+             f'{"изучаемых английских слова." if 4 >= number_of_words > 1 else "изучаемых английских слов."}\n'
+             f'*Слова необходимо разделить пробелом и записать в одну строку.*\n'
+             f'*Пример:* {await utils.misc.misc.create_words_example()}',
+        parse_mode='Markdown',
         disable_notification=True)
     await utils.misc.create_user_counter_instance(state=state)
     await states.set_command_state.SetCommandStates.get_learning_words.set()
