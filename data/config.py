@@ -4,7 +4,7 @@ import os
 TOKEN = os.getenv('TOKEN')
 
 WEBHOOK_HOST = f'https://'
-WEBHOOK_PATH = f'/webhook/{TOKEN}'
+WEBHOOK_PATH = f'/{TOKEN}'
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 WEBAPP_HOST = '0.0.0.0'
