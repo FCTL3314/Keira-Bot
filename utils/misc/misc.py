@@ -13,8 +13,7 @@ async def create_words_example(number_of_words=NUMBER_OF_WORDS) -> str:
     return ' '.join(words[:number_of_words])
 
 
-async def create_achievements_text(message: aiogram.types.Message):
-    user_id = message.from_user.id
+async def create_achievements_text(user_id):
     achievements = list()
     with utils.database.postgres_database as db:
         if await db.get_pioneer_achievement(user_id=user_id):
