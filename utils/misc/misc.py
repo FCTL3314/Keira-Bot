@@ -51,7 +51,7 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         user_data['user_counter'].increment()
     with utils.database.postgres_database as db:
         if user_counter.get_score() == CORRECT_ANSWERS_TO_LEARN_WORDS:
-            await db.add_learned_words(learned_words=learning_words, user_id=user_id)
+            await db.add_learned_words(words=learning_words, user_id=user_id)
             await utils.misc.send_message.send_words_learned_message(message=message)
             if not await db.get_scrabble_achievement(user_id=user_id):
                 await db.set_scrabble_achievement(user_id=user_id)

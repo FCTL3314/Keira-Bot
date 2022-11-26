@@ -45,8 +45,9 @@ class PostgresDatabase:
     async def create_tables(self):
         self.__cur.execute("""
                 CREATE TABLE IF NOT EXISTS user_data (
-                user_id BIGINT PRIMARY KEY
-                user_name varchar(32)""")
+                user_id BIGINT PRIMARY KEY,
+                user_name varchar(32)
+                )""")
         self.__cur.execute("""
                 CREATE TABLE IF NOT EXISTS learned_words (
                 user_id bigint REFERENCES user_data(user_id) ON DELETE CASCADE,
@@ -65,21 +66,26 @@ class PostgresDatabase:
 
     async def create_user_rows(self, user_id: int):
         self.__cur.execute(f"""INSERT INTO user_data (user_id) VALUES ({user_id})""")
-        self.__cur.execute(f"""INSERT INTO achievemnts (user_id) VALUES ({user_id})""")
+        self.__cur.execute(f"""INSERT INTO achievements (user_id) VALUES ({user_id})""")
 
-    async def add_learned_words(self, learned_words: List[str], user_id: int):
+    async def add_learned_words(self, words: List[str], user_id: int):
         if not await self.is_user_exist(user_id=user_id):
             await self.create_user_rows(user_id=user_id)
-        for word in learned_words:
-            if word not in self.get_learned_words(user_id=user_id):
-                self.__cur.execute(f"""INSERT INTO learned_words (word) VALUES ({word})""")
+        learned_words = await self.get_learned_words(user_id=user_id)
+        for word in words:
+            if not learned_words:
+                self.__cur.execute(f"""INSERT INTO learned_words (user_id, word) VALUES ({user_id}, '{word}')""")
+            elif word not in learned_words:
+                self.__cur.execute(f"""INSERT INTO learned_words (user_id, word) VALUES ({user_id}, '{word}')""")
 
     async def get_learned_words(self, user_id: int) -> List[str]:
         if not await self.is_user_exist(user_id=user_id):
             await self.create_user_rows(user_id=user_id)
-        result = self.__cur.execute(f"""SELECT word FROM learned_words WHERE user_id = {user_id}""")
-        if result:
-            return self.__cur.fetchone()[0].split()
+        self.__cur.execute(f"""SELECT word FROM learned_words WHERE user_id = {user_id}""")
+        words_tuple = self.__cur.fetchall()
+        if words_tuple:
+            result = [word[0] for word in words_tuple]
+            return result
 
     async def set_scrabble_achievement(self, user_id: int, value=True):
         if not await self.is_user_exist(user_id=user_id):
