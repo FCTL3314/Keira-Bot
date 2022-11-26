@@ -42,14 +42,22 @@ class PostgresDatabase:
         self.__cur = self.__conn.cursor()
         self.connected = True
 
-    async def create_table(self):
+    async def create_tables(self):
         self.__cur.execute("""
-        CREATE TABLE IF NOT EXISTS public.user_data (
-        user_id BIGINT,
-        learned_words text,
-        scrabble_achievement boolean DEFAULT FALSE,
-        pioneer_achievement boolean DEFAULT FALSE,
-        PRIMARY KEY (user_id))""")
+                CREATE TABLE IF NOT EXISTS user_data (
+                user_id BIGINT PRIMARY KEY
+                user_name varchar(32)""")
+        self.__cur.execute("""
+                CREATE TABLE IF NOT EXISTS learned_words (
+                user_id bigint REFERENCES user_data(user_id) ON DELETE CASCADE,
+                word varchar(32)
+                )""")
+        self.__cur.execute("""
+                CREATE TABLE IF NOT EXISTS achievements (
+                user_id bigint REFERENCES user_data(user_id) ON DELETE CASCADE,
+                scrabble_achievement bool DEFAULT FALSE,
+                pioneer_achievement bool DEFAULT FALSE
+                )""")
 
     async def is_user_exist(self, user_id: int) -> bool:
         self.__cur.execute(f'SELECT user_id FROM user_data WHERE user_id = {user_id}')

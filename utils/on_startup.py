@@ -14,4 +14,4 @@ async def on_startup(dp: aiogram.Dispatcher):
     ])
     await bot.set_webhook(WEBHOOK_URL)
     with utils.database.postgres_database as db:
-        await db.create_table()
+        await db.create_tables()
