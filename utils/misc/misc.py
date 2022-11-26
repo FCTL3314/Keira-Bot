@@ -16,9 +16,9 @@ async def create_words_example(number_of_words=NUMBER_OF_WORDS) -> str:
 async def create_achievements_text(user_id):
     achievements = list()
     with utils.database.postgres_database as db:
-        if await db.get_pioneer_achievement(user_id=user_id):
+        if await db.get_achievement(achievement='pioneer_achievement', user_id=user_id):
             achievements.append("🌄Первопроходец - Спасибо за использование проекта, начиная с самых ранних дней!")
-        if await db.get_scrabble_achievement(user_id=user_id):
+        if await db.get_achievement(achievement='scrabble_achievement', user_id=user_id):
             achievements.append("🎓Эрудит - Выучить свои первые слова.")
     return '\n\n● '.join(achievements)
 
@@ -53,8 +53,8 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         if user_counter.get_score() == CORRECT_ANSWERS_TO_LEARN_WORDS:
             await db.add_learned_words(words=learning_words, user_id=user_id)
             await utils.misc.send_message.send_words_learned_message(message=message)
-            if not await db.get_scrabble_achievement(user_id=user_id):
-                await db.set_scrabble_achievement(user_id=user_id)
+            if not await db.get_achievement(achievement='scrabble_achievement', user_id=user_id):
+                await db.set_achievement(achievement='scrabble_achievement', user_id=user_id)
                 await utils.misc.send_message.send_scrabble_achievement_received_message(message=message)
             await state.finish()
         else:
