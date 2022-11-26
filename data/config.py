@@ -11,11 +11,11 @@ WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 WEBAPP_HOST = '0.0.0.0'
 WEBAPP_PORT = int(os.getenv('PORT', 8000))
 
-PG_HOST = os.getenv('PG_HOST')
-PG_DBNAME = os.getenv('PG_DBNAME')
-PG_USER = os.getenv('PG_USER')
-PG_PASSWORD = os.getenv('PG_PASSWORD')
-PG_PORT = os.getenv('PG_PORT', 5432)
+PG_HOST = ''
+PG_DBNAME = ''
+PG_USER = ''
+PG_PASSWORD = ''
+PG_PORT = 5432
 
 NUMBER_OF_WORDS = 5  # max 6
 CORRECT_ANSWERS_TO_LEARN_WORDS = 20
