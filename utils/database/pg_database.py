@@ -14,22 +14,22 @@ class PostgresDatabase:
             port=PG_PORT
         )
         self.__cur = self.__conn.cursor()
-        self.connected = True
+        self._connected = True
 
     def __enter__(self):
-        if not self.connected:
+        if not self._connected:
             self.connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.connected:
+        if self._connected:
             self.__cur.close()
             if isinstance(exc_val, Exception):
                 self.__conn.rollback()
             else:
                 self.__conn.commit()
             self.__conn.close()
-            self.connected = False
+            self._connected = False
 
     def connect(self):
         self.__conn = psycopg2.connect(
@@ -40,7 +40,7 @@ class PostgresDatabase:
             port=PG_PORT
         )
         self.__cur = self.__conn.cursor()
-        self.connected = True
+        self._connected = True
 
     async def create_tables(self):
         self.__cur.execute("""
