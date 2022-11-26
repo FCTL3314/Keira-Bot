@@ -44,7 +44,6 @@ async def get_random_translated_word(state: aiogram.dispatcher.FSMContext) -> st
 
 
 async def correct_answer_response(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
-    user_id = message.from_user.id
     async with state.proxy() as user_data:
         user_counter = user_data['user_counter']
         learning_words = user_data['learning_words']
@@ -83,8 +82,15 @@ async def create_user_counter_instance(state: aiogram.dispatcher.FSMContext):
         user_data['user_counter'] = utils.misc.user_counter.UserCounter()
 
 
-def log_user_words(username, first_name, learning_words):
+def log_user_enter_words(username, first_name, learning_words):
     if username:
-        logging.info(msg=f' {username} - {learning_words}')
+        logging.info(msg=f'{username} enter: {learning_words}')
     else:
-        logging.info(msg=f'{first_name} - {learning_words}')
+        logging.info(msg=f'{first_name} enter: {learning_words}')
+
+
+def log_user_learned_words(username, first_name, learning_words):
+    if username:
+        logging.info(msg=f'{username} learned: {learning_words}')
+    else:
+        logging.info(msg=f'{first_name} learned: {learning_words}')
