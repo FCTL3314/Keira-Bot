@@ -42,7 +42,12 @@ async def send_words_not_accepted_message(learning_words, cause: str, message: a
                 disable_notification=True)
         case 'WordsRepeated':
             await message.answer(text='❗*Ой, что-то пошло не так:*\nНекоторые из твоих слов повторяются.',
-                                 parse_mode='Markdown', )
+                                 parse_mode='Markdown',
+                                 disable_notification=True)
+        case 'OneOfWordsTooLong':
+            await message.answer(text='❗*Ой, что-то пошло не так:*\nНекоторые из твоих слов слишком длинные.',
+                                 parse_mode='Markdown',
+                                 disable_notification=True)
 
 
 async def send_random_word_message(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
