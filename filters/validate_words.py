@@ -6,7 +6,7 @@ from string import punctuation
 from data.config import NUMBER_OF_WORDS
 
 
-async def validate_words(learning_words: List[str], user_id, message: aiogram.types.Message,
+async def validate_words(learning_words: List[str], message: aiogram.types.Message,
                          number_of_words=NUMBER_OF_WORDS) -> bool:
     if await is_contains_punctuation(words=''.join(learning_words)):
         await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
@@ -28,7 +28,7 @@ async def validate_words(learning_words: List[str], user_id, message: aiogram.ty
         await utils.misc.send_message.send_words_not_accepted_message(learning_words=learning_words,
                                                                       cause='OneOfWordsTooLong',
                                                                       message=message)
-    elif await is_contains_learned_words(words=learning_words, user_id=user_id):
+    elif await is_contains_learned_words(words=learning_words, message=message):
         await utils.misc.send_message.send_words_contains_learned_words_message(message=message)
         return True
     else:
@@ -65,9 +65,9 @@ async def is_word_length_allowed(words: List[str]) -> bool:
     return True
 
 
-async def is_contains_learned_words(words: List[str], user_id) -> bool:
+async def is_contains_learned_words(words: List[str], message: aiogram.types.Message) -> bool:
     with utils.database.postgres_database as db:
-        learned_words = await db.get_learned_words(user_id=user_id)
+        learned_words = await db.get_learned_words(message=message)
     if learned_words is None:
         return False
     else:

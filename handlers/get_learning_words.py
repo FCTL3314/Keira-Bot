@@ -6,11 +6,10 @@ import states
 
 async def get_learning_words(message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext):
     """Gets user-entered words and writes it to FSM storage."""
-    user_id = message.from_user.id
     async with state.proxy() as user_data:
         user_data['learning_words'] = [word.capitalize() for word in message.text.split()]
         learning_words = user_data['learning_words']
-    if await filters.validate_words(learning_words=learning_words, user_id=user_id, message=message):
+    if await filters.validate_words(learning_words=learning_words, message=message):
         utils.misc.log_user_words(username=message.from_user.username, first_name=message.from_user.first_name,
                                   learning_words=learning_words)
         await message.answer(text='⏳*Обработка...*', parse_mode='Markdown', disable_notification=True)

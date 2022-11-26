@@ -1,3 +1,4 @@
+import aiogram
 import psycopg2
 
 from typing import List
@@ -58,40 +59,53 @@ class PostgresDatabase:
         pioneer_achievement bool DEFAULT FALSE)
         """)
 
-    async def is_user_exist(self, user_id: int) -> bool:
+    async def is_user_exist(self, message: aiogram.types.Message) -> bool:
+        user_id = message.from_user.id
         self.__cur.execute(f"""SELECT user_id FROM user_data WHERE user_id = {user_id}""")
         return bool(self.__cur.fetchone())
 
-    async def create_user_rows(self, user_id: int):
-        self.__cur.execute(f"""
-        INSERT INTO user_data (user_id) VALUES ({user_id});
-        INSERT INTO achievements (user_id) VALUES ({user_id})
-        """)
+    async def create_user_rows(self, message: aiogram.types.Message):
+        user_id = message.from_user.id
+        user_name = message.from_user.username
+        if user_name:
+            self.__cur.execute(f"""
+            INSERT INTO user_data (user_id, user_name) VALUES ({user_id}, '{user_name}');
+            INSERT INTO achievements (user_id) VALUES ({user_id})
+            """)
+        else:
+            self.__cur.execute(f"""
+            INSERT INTO user_data (user_id) VALUES ({user_id});
+            INSERT INTO achievements (user_id) VALUES ({user_id})
+            """)
 
-    async def add_learned_words(self, words: List[str], user_id: int):
-        if not await self.is_user_exist(user_id=user_id):
-            await self.create_user_rows(user_id=user_id)
-        learned_words = await self.get_learned_words(user_id=user_id)
+    async def add_learned_words(self, words: List[str], message: aiogram.types.Message):
+        user_id = message.from_user.id
+        if not await self.is_user_exist(message=message):
+            await self.create_user_rows(message=message)
+        learned_words = await self.get_learned_words(message=message)
         for word in words:
             if not learned_words or word not in learned_words:
                 self.__cur.execute(f"""INSERT INTO learned_words (user_id, word) VALUES ({user_id}, '{word}')""")
 
-    async def get_learned_words(self, user_id: int) -> List[str]:
-        if not await self.is_user_exist(user_id=user_id):
-            await self.create_user_rows(user_id=user_id)
+    async def get_learned_words(self, message: aiogram.types.Message) -> List[str]:
+        user_id = message.from_user.id
+        if not await self.is_user_exist(message=message):
+            await self.create_user_rows(message=message)
         self.__cur.execute(f"""SELECT word FROM learned_words WHERE user_id = {user_id}""")
         words_tuple = self.__cur.fetchall()
         if words_tuple:
             result = [word[0] for word in words_tuple]
             return result
 
-    async def set_achievement(self, user_id: int, achievement: str, value=True):
-        if not await self.is_user_exist(user_id=user_id):
-            await self.create_user_rows(user_id=user_id)
+    async def set_achievement(self, message: aiogram.types.Message, achievement: str, value=True):
+        user_id = message.from_user.id
+        if not await self.is_user_exist(message=message):
+            await self.create_user_rows(message=message)
         self.__cur.execute(f"""UPDATE achievements SET {achievement} = {value} WHERE user_id = {user_id}""")
 
-    async def get_achievement(self, achievement: str, user_id: int) -> bool:
-        if not await self.is_user_exist(user_id=user_id):
-            await self.create_user_rows(user_id=user_id)
+    async def get_achievement(self, achievement: str, message: aiogram.types.Message) -> bool:
+        user_id = message.from_user.id
+        if not await self.is_user_exist(message=message):
+            await self.create_user_rows(message=message)
         self.__cur.execute(f"""SELECT {achievement} FROM achievements WHERE user_id = {user_id}""")
         return self.__cur.fetchone()[0]
