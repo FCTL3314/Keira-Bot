@@ -50,6 +50,8 @@ async def correct_answer_response(message: aiogram.types.Message, state: aiogram
         user_data['user_counter'].increment()
     with utils.database.postgres_database as db:
         if user_counter.get_score() == CORRECT_ANSWERS_TO_LEARN_WORDS:
+            log_user_learned_words(username=message.from_user.username, first_name=message.from_user.first_name,
+                                   learning_words=learning_words)
             await db.add_learned_words(words=learning_words, message=message)
             await utils.misc.send_message.send_words_learned_message(message=message)
             if not await db.get_achievement(achievement='scrabble_achievement', message=message):
@@ -84,13 +86,13 @@ async def create_user_counter_instance(state: aiogram.dispatcher.FSMContext):
 
 def log_user_enter_words(username, first_name, learning_words):
     if username:
-        logging.info(msg=f'{username} enter: {learning_words}')
+        logging.info(msg=f'User {username} enter: {learning_words}')
     else:
-        logging.info(msg=f'{first_name} enter: {learning_words}')
+        logging.info(msg=f'Person {first_name} enter: {learning_words}')
 
 
 def log_user_learned_words(username, first_name, learning_words):
     if username:
-        logging.info(msg=f'{username} learned: {learning_words}')
+        logging.info(msg=f'User {username} learned: {learning_words}')
     else:
-        logging.info(msg=f'{first_name} learned: {learning_words}')
+        logging.info(msg=f'Person {first_name} learned: {learning_words}')
