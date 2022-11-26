@@ -16,8 +16,8 @@ async def start_command(message: aiogram.types.Message):
         text=f'❕Написав команду /progress, ты увидишь библиотеку выученных слов, а так же витрину своих достижений.',
         disable_notification=True)
     with utils.database.postgres_database as db:
-        if not await db.get_pioneer_achievement(user_id=user_id):
-            await db.set_pioneer_achievement(user_id=user_id)
+        if not await db.get_achievement(achievement='pioneer_achievement', user_id=user_id):
+            await db.set_achievement(achievement='pioneer_achievement', user_id=user_id)
             await utils.misc.send_message.send_pioneer_achievement_received_message(message=message)
 
 
