@@ -1,4 +1,5 @@
 import os
+import logging
 
 
 TOKEN = os.getenv('TOKEN')
@@ -24,3 +25,8 @@ COUNTER_NUMBERS_TO_SEND_PROGRESS = [i for i in range(1, CORRECT_ANSWERS_TO_LEARN
 
 FROM_LANGUAGE = 'eu'
 TO_LANGUAGE = 'ru'
+
+LOGGING_LEVEL = logging.INFO
+LOGGING_FILE_NAME = "log"
+LOGGING_FILE_MODE = 'w'
+LOGGING_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'

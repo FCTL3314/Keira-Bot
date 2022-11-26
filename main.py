@@ -6,9 +6,10 @@ import utils
 
 from loader import dp
 from data.config import WEBHOOK_PATH, WEBAPP_HOST, WEBAPP_PORT
+from data.config import LOGGING_LEVEL, LOGGING_FILE_NAME, LOGGING_FILE_MODE, LOGGING_FORMAT
 
-logging.basicConfig(level=logging.INFO, filename="log.log", filemode='a',
-                    format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=LOGGING_LEVEL, filename=f"{LOGGING_FILE_NAME}.log", filemode=LOGGING_FILE_MODE,
+                    format=LOGGING_FORMAT)
 
 handlers.start_command.register_start_command_handlers(dp=dp)
 handlers.set_command.register_set_command_handlers(dp=dp)
