@@ -3,7 +3,7 @@ import aiogram
 import utils
 import keyboards
 
-from data.config import NUMBER_OF_WORDS, CORRECT_ANSWERS_TO_LEARN_WORDS, COUNTER_NUMBERS_TO_SEND_PROGRESS
+from data.config import NUMBER_OF_WORDS, CORRECT_ANSWERS_TO_LEARN_WORDS, CORRECT_ANSWERS_TO_SEND_PROGRESS_MESSAGE
 
 
 async def send_words_accepted_message(learning_words, learning_words_translated, message: aiogram.types.Message,
@@ -65,7 +65,7 @@ async def send_random_word_message(message: aiogram.types.Message, state: aiogra
 
 async def send_correct_answer_message(user_counter, message: aiogram.types.Message,
                                       answers_to_learn_words=CORRECT_ANSWERS_TO_LEARN_WORDS,
-                                      counter_numbers_to_send_progress=COUNTER_NUMBERS_TO_SEND_PROGRESS):
+                                      counter_numbers_to_send_progress=CORRECT_ANSWERS_TO_SEND_PROGRESS_MESSAGE):
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(text=f'🟢*Верно*!\n⏫Уровень изученности слов повышен до *{words_progress:.0%}*',
@@ -96,7 +96,7 @@ async def send_pioneer_achievement_received_message(message: aiogram.types):
 
 async def send_wrong_answer_message(user_counter, message: aiogram.types.Message, state: aiogram.dispatcher.FSMContext,
                                     answers_to_learn_words=CORRECT_ANSWERS_TO_LEARN_WORDS,
-                                    counter_numbers_to_send_progress=COUNTER_NUMBERS_TO_SEND_PROGRESS):
+                                    counter_numbers_to_send_progress=CORRECT_ANSWERS_TO_SEND_PROGRESS_MESSAGE):
     if user_counter.get_score() in counter_numbers_to_send_progress:
         words_progress = 1.0 / (answers_to_learn_words / user_counter.get_score())
         await message.answer(

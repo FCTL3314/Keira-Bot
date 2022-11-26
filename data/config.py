@@ -1,7 +1,6 @@
 import os
 import logging
 
-
 TOKEN = os.getenv('TOKEN')
 
 WEBHOOK_HOST = f'https://'
@@ -20,8 +19,8 @@ PG_PORT = 5432
 NUMBER_OF_WORDS = 5  # max 6
 CORRECT_ANSWERS_TO_LEARN_WORDS = 20
 PROGRESS_MESSAGE_SENDING_FREQUENCY = 5  # not more than CORRECT_ANSWERS_TO_LEARN_WORDS
-COUNTER_NUMBERS_TO_SEND_PROGRESS = [i for i in range(1, CORRECT_ANSWERS_TO_LEARN_WORDS) if
-                                    i % PROGRESS_MESSAGE_SENDING_FREQUENCY == 0]
+CORRECT_ANSWERS_TO_SEND_PROGRESS_MESSAGE = [i for i in range(1, CORRECT_ANSWERS_TO_LEARN_WORDS) if
+                                            i % PROGRESS_MESSAGE_SENDING_FREQUENCY == 0]
 
 FROM_LANGUAGE = 'eu'
 TO_LANGUAGE = 'ru'
