@@ -86,13 +86,13 @@ async def create_user_counter_instance(state: aiogram.dispatcher.FSMContext):
 
 def log_user_enter_words(username, first_name, learning_words):
     if username:
-        logging.info(msg=f'User {username} enter: {learning_words}')
+        logging.info(msg=f'User {username} enter words: {learning_words}')
     else:
-        logging.info(msg=f'Person {first_name} enter: {learning_words}')
+        logging.info(msg=f'Person {first_name} enter words: {learning_words}')
 
 
 def log_user_learned_words(username, first_name, learning_words):
     if username:
-        logging.info(msg=f'User {username} learned: {learning_words}')
+        logging.info(msg=f'User {username} learned words: {learning_words}')
     else:
-        logging.info(msg=f'Person {first_name} learned: {learning_words}')
+        logging.info(msg=f'Person {first_name} learned words: {learning_words}')
