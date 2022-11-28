@@ -66,10 +66,10 @@ class PostgresDatabase:
 
     async def create_user_rows(self, message: aiogram.types.Message):
         user_id = message.from_user.id
-        user_name = message.from_user.username
-        if user_name:
+        username = message.from_user.username
+        if username:
             self.__cur.execute(f"""
-            INSERT INTO user_data (user_id, user_name) VALUES ({user_id}, '{user_name}');
+            INSERT INTO user_data (user_id, username) VALUES ({user_id}, '{username}');
             INSERT INTO achievements (user_id) VALUES ({user_id})
             """)
         else:
